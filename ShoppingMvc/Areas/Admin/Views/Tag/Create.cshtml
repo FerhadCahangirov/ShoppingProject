@@ -1,0 +1,62 @@
+﻿@model TagCreateVm
+@{
+    ViewData["Title"] = "Create";
+}
+@section styles {
+    <style>
+        .custom-file-input::-webkit-file-upload-button {
+            visibility: hidden;
+            display: none;
+        }
+
+        .custom-file-input::before {
+            content: 'Select Image';
+            display: inline-block;
+            background: linear-gradient(top, #f9f9f9, #e3e3e3);
+            padding: 6px 12px;
+            outline: 0;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            cursor: pointer;
+            text-shadow: 1px 1px #fff;
+            font-weight: 700;
+            font-size: 10pt;
+        }
+
+        .custom-file-input:hover::before {
+            border-color: #c5c5c5;
+        }
+
+        .custom-file-input:active::before {
+            background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+        }
+
+        .custom-file-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create Slider</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control">
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="text" style="margin-top:10px">
+                <button class="btn btn-success" style="color:white;background:#088178!important">Create</button>
+                <a asp-controller="Tag" asp-action="Cancel" class="btn btn-danger">Cancel</a>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+

@@ -1,0 +1,78 @@
+﻿
+@model HomeVm
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to update cart totals
+            function updateCartTotals() {
+                var subtotal = 0;
+                $(".subtotal span").each(function () {
+                    subtotal += parseFloat($(this).text().replace("$", "").replace(",", ""));
+                });
+                $(".cart_total_amount span").text("$" + subtotal.toFixed(0)); // Update cart subtotal
+
+                // Since the shipping is free, the total will be the same as the subtotal
+                $(".cart_total_amount strong span").text("$" + subtotal.toFixed(0)); // Update cart total
+            }
+
+            // Event listener for quantity change buttons
+            $(".qty-change").on("click", function (ev) {
+                ev.preventDefault();
+                var $row = $(this).closest("tr");
+                var $quantityElement = $row.find(".qty-val");
+                var quantity = parseInt($quantityElement.text());
+                var $priceElement = $row.find(".price span");
+                var price = parseFloat($priceElement.text().replace("$", "").replace(",", ""));
+                var $subtotalElement = $row.find(".subtotal span");
+
+                if ($(this).hasClass("qty-up")) {
+                    quantity++;
+                } else {
+                    if (quantity > 1) {
+                        quantity--;
+                    }
+                }
+
+                $quantityElement.text(quantity);
+                var subtotal = price * quantity;
+                $subtotalElement.text("$" + subtotal.toFixed(0)); // Display price without decimals
+
+                updateCartTotals(); // Update cart totals after quantity change
+            });
+
+            // Event listener for manually entered quantity
+            $(".qty-val").on("input", function () {
+                var $row = $(this).closest("tr");
+                var quantity = parseInt($(this).text());
+                if (isNaN(quantity) || quantity < 1) {
+                    quantity = 1;
+                    $(this).text(quantity);
+                }
+                var $priceElement = $row.find(".price span");
+                var price = parseFloat($priceElement.text().replace("$", "").replace(",", ""));
+                var $subtotalElement = $row.find(".subtotal span");
+
+                var subtotal = price * quantity;
+                $subtotalElement.text("$" + subtotal.toFixed(0)); // Display price without decimals
+
+                updateCartTotals(); // Update cart totals after quantity change
+            });
+
+            // Initial update of cart totals on page load
+            updateCartTotals();
+        });
+    </script>
+}
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Shop
+                <span></span> Your Cart
+            </div>
+        </div>
+    </div>
+    @await Component.InvokeAsync("ShopCart")
+</main>

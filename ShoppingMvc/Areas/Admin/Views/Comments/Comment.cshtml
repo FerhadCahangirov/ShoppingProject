@@ -1,0 +1,8 @@
+﻿@model Comment
+
+@using (Html.BeginForm("AddComment", "Comments"))
+{
+    @Html.TextAreaFor(model => model.Message, new { @class = "form-control", placeholder = "Write Comment" })
+    @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", placeholder = "Name" })
+    <button type="submit" class="btn btn-primary">Submit Comment</button>
+}

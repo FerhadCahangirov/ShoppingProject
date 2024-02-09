@@ -1,0 +1,1 @@
+﻿global using ShoppingMvc.Models.Common;
