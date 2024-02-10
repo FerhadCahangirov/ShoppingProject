@@ -3,15 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
-using ShoppingMvc.Models.Cards;
-using ShoppingMvc.Models.Tags;
+using ShoppingMvc.Models;
 using ShoppingMvc.ViewModels.CommonVm;
 using ShoppingMvc.ViewModels.ProductVm;
 using ShoppingMvc.ViewModels.TagVm;
 
 namespace ShoppingMvc.Areas.Admin.Controllers
 {
-	[Area("Admin")]
+    [Area("Admin")]
     [Authorize(Roles = "Admin")]
     public class TagController : Controller
 	{

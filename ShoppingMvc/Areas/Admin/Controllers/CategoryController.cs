@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Helpers;
-using ShoppingMvc.Models.Cards;
-using ShoppingMvc.Models.Categories;
+using ShoppingMvc.Models;
 using ShoppingMvc.ViewModels.CategoryVm;
 using ShoppingMvc.ViewModels.CommonVm;
 
@@ -23,7 +22,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
 
         public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)
         {
-            var items = await _db.Categorys.Skip((page - 1) * count).Take(count).Select(c => new CategoryListItemVm
+            var items = await _db.Categories.Skip((page - 1) * count).Take(count).Select(c => new CategoryListItemVm
             {
                 Id = c.Id,
                 CreatedTime = c.CreatedTime,
@@ -32,7 +31,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
                 IsArchived = c.IsArchived,
                 Name = c.Name,
             }).ToListAsync();
-            int totalCount = await _db.Categorys.CountAsync();
+            int totalCount = await _db.Categories.CountAsync();
             PaginationVm<IEnumerable<CategoryListItemVm>> pag = new(totalCount, page, (int)Math.Ceiling((decimal)totalCount / count), items);
             return PartialView("_CategoryPaginationPartial", pag);
         }
@@ -41,7 +40,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             int take = 4;
             int skip = (page - 1) * take;
 
-            var query = _db.Categorys.Select(c => new CategoryListItemVm
+            var query = _db.Categories.Select(c => new CategoryListItemVm
             {
                 Id = c.Id,
                 CreatedTime = c.CreatedTime,
@@ -104,7 +103,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             {
                 return View(vm);
             }
-            if (await _db.Categorys.AnyAsync(x => x.Name == vm.Name))
+            if (await _db.Categories.AnyAsync(x => x.Name == vm.Name))
             {
                 ModelState.AddModelError("Name", vm.Name + " already exist");
                 return View(vm);
@@ -113,7 +112,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             {
                 Name = vm.Name,
             };
-            _db.Categorys.AddAsync(product);
+            _db.Categories.AddAsync(product);
             await _db.SaveChangesAsync();
             TempData["Response"] = true;
             return RedirectToAction(nameof(Index));
@@ -121,7 +120,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         public async Task<IActionResult> Update(int? id)
         {
             if (id == null) return BadRequest();
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
             return View(new CategoryUpdateVm
             {
@@ -137,10 +136,10 @@ namespace ShoppingMvc.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = _db.Categorys;
+                ViewBag.Categories = _db.Categories;
                 return View(vm);
             }
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
              data.Name = vm.Name;
             await _db.SaveChangesAsync();
@@ -151,7 +150,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         {
 
             if (id == null) return BadRequest();
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
 
             data.IsDeleted = true;
@@ -161,7 +160,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         public async Task<IActionResult> RestoreProduct(int? id)
         {
             if (id == null) return BadRequest();
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
             data.IsDeleted = false;
             await _db.SaveChangesAsync();
@@ -170,7 +169,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         public async Task<IActionResult> RestoreArchiveProduct(int? id)
         {
             if (id == null) return BadRequest();
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
             data.IsArchived = false;
             await _db.SaveChangesAsync();
@@ -180,17 +179,17 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         {
             TempData["Delete"] = false;
             if (id == null) return BadRequest();
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
             TempData["Delete"] = true;
-            _db.Categorys.Remove(data);
+            _db.Categories.Remove(data);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Archived(int? id)
         {
             if (id == null) return BadRequest();
-            var data = await _db.Categorys.FindAsync(id);
+            var data = await _db.Categories.FindAsync(id);
             if (data == null) return NotFound();
             data.IsArchived = true;
             await _db.SaveChangesAsync();

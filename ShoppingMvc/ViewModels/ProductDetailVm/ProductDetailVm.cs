@@ -1,5 +1,5 @@
 ﻿using ShoppingMvc.Models;
-using ShoppingMvc.Models.Cards;
+using ShoppingMvc.ViewModels.ProductVm;
 
 namespace ShoppingMvc.ViewModels.ProductDetailVm
 {
@@ -7,12 +7,12 @@ namespace ShoppingMvc.ViewModels.ProductDetailVm
     {
         public List<Comment> Comments { get; set; }
         public Comment Comment { get; set; }
-        public Product Product { get; set; }
+        public ProductListItemVm Product { get; set; }
 
         public ProductDetailVm()
         {
             Comments = new List<Comment>();
-            Product = new Product();    
+            Product = new ProductListItemVm();    
             Comment = new Comment();
         }
     }

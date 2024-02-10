@@ -1,4 +1,4 @@
-﻿using ShoppingMvc.Models.Cards;
+﻿using ShoppingMvc.Models;
 
 namespace ShoppingMvc.ViewModels.CategoryVm
 {

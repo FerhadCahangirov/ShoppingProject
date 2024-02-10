@@ -24,21 +24,21 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         }
 
 
-        /*public async Task<IActionResult> Index()
-        {
-            return View(await _db.Sliders.Select(c => new SliderListItemVm
-            {
-                Id = c.Id,
-                CreatedTime = c.CreatedTime,
-                UpdatedTime = c.UpdatedTime,
-                ImageUrl = c.ImageUrl,
-                IsDeleted = c.IsDeleted,
-                Title = c.Title,
-                Description = c.Description,
-                Discount = c.Discount,
-                Button = c.Button,
-            }).ToListAsync());
-        }*/
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _db.Sliders.Select(c => new SliderListItemVm
+        //    {
+        //        Id = c.Id,
+        //        CreatedTime = c.CreatedTime,
+        //        UpdatedTime = c.UpdatedTime,
+        //        ImageUrl = c.ImageUrl,
+        //        IsDeleted = c.IsDeleted,
+        //        Title = c.Title,
+        //        Description = c.Description,
+        //        Discount = c.Discount,
+        //        Button = c.Button,
+        //    }).ToListAsync());
+        //}
 
         public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)
         {

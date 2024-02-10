@@ -2,9 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ShoppingMvc.Models;
-using ShoppingMvc.Models.Cards;
-using ShoppingMvc.Models.Categories;
-using ShoppingMvc.Models.Tags;
 
 namespace ShoppingMvc.Contexts
 {
@@ -15,12 +12,15 @@ namespace ShoppingMvc.Contexts
         }
         public DbSet<Slider> Sliders { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Category>  Categorys { get; set; }
+        public DbSet<Category>  Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<ProductTag> ProductTags { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Reply> Replys { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<AdditionalInfo> AdditionalInfos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -21,37 +21,24 @@
                                     <span class="zoom-icon"><i class="fi-rs-search"></i></span>
                                     <!-- MAIN SLIDES -->
                                     <div class="product-image-slider">
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-2.jpg" alt="product image">
-                                        </figure>
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-1.jpg" alt="product image">
-                                        </figure>
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-3.jpg" alt="product image">
-                                        </figure>
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-4.jpg" alt="product image">
-                                        </figure>
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-5.jpg" alt="product image">
-                                        </figure>
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-6.jpg" alt="product image">
-                                        </figure>
-                                        <figure class="border-radius-10">
-                                            <img src="~/Assets/assets/imgs/shop/product-16-7.jpg" alt="product image">
-                                        </figure>
+                                        @{
+                                            foreach (var image in Model.Product.ProductImages)
+                                            {
+                                                <figure class="border-radius-10">
+                                                    <img src="@image.ImageUrl" alt="@image.ImageName">
+                                                </figure>
+                                            }
+                                        }
                                     </div>
                                     <!-- THUMBNAILS -->
                                     <div class="slider-nav-thumbnails pl-15 pr-15">
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-3.jpg" alt="product image"></div>
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-4.jpg" alt="product image"></div>
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-5.jpg" alt="product image"></div>
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-6.jpg" alt="product image"></div>
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-7.jpg" alt="product image"></div>
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-8.jpg" alt="product image"></div>
-                                        <div><img src="~/Assets/assets/imgs/shop/thumbnail-9.jpg" alt="product image"></div>
+                                        @{
+                                            foreach (var image in Model.Product.ProductImages)
+                                            {
+                                                <div><img src="@image.ImageUrl" alt="@image.ImageName"></div>
+
+                                            }
+                                        }
                                     </div>
                                 </div>
                                 <!-- End Gallery -->
@@ -67,29 +54,31 @@
                             </div>
                             <div class="col-md-6 col-sm-12 col-xs-12">
                                 <div class="detail-info">
-                                    <h2 class="title-detail">Colorful Pattern Shirts HD450</h2>
+                                    <h2 class="title-detail">@Model.Product.Title</h2>
                                     <div class="product-detail-rating">
                                         <div class="pro-details-brand">
-                                            <span> Brands: <a href="shop-grid-right.html">Bootstrap</a></span>
+                                            <span> Category: <a href="shop-grid-right.html">@Model.Product.CategoryName</a></span>
                                         </div>
                                         <div class="product-rate-cover text-end">
                                             <div class="product-rate d-inline-block">
                                                 <div class="product-rating" style="width:90%">
                                                 </div>
                                             </div>
-                                            <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                                            <span class="font-small ml-5 text-muted"> (@Model.Comments.Count())</span>
                                         </div>
                                     </div>
                                     <div class="clearfix product-price-cover">
                                         <div class="product-price primary-color float-left">
-                                            <ins><span class="text-brand">$120.00</span></ins>
-                                            <ins><span class="old-price font-md ml-15">$200.00</span></ins>
-                                            <span class="save-price  font-md color3 ml-15">25% Off</span>
+                                            <ins><span class="text-brand">$@Model.Product.SellPrice</span></ins>
+                                            <ins><span class="old-price font-md ml-15">$@Model.Product.Price</span></ins>
+                                            <span class="save-price  font-md color3 ml-15">@Model.Product.DiscountRate% Off</span>
                                         </div>
                                     </div>
                                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                                     <div class="short-desc mb-30">
-                                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam rem officia, corrupti reiciendis minima nisi modi, quasi, odio minus dolore impedit fuga eum eligendi? Officia doloremque facere quia. Voluptatum, accusantium!</p>
+                                        <p>
+                                            @Model.Product.Description
+                                        </p>
                                     </div>
                                     <div class="product_sort_info font-xs mb-30">
                                         <ul>
@@ -301,7 +290,7 @@
                                                                     <p>@comment.Message</p>
                                                                     <div class="d-flex justify-content-between">
                                                                         <div class="d-flex align-items-center">
-                                                                            <p class="font-xs mr-30">@comment.PostedDate.ToString("MMMM d, yyyy")</p>
+                                                                            <p class="font-xs mr-30">@comment.CreatedTime.ToString("MMMM d, yyyy")</p>
                                                                             <a class="text-brand btn-reply">Reply <i class="fi-rs-arrow-right"></i></a>
                                                                         </div>
                                                                     </div>

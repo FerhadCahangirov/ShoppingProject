@@ -20,15 +20,9 @@ namespace ShoppingMvc.ViewComponents.ShoppingViewComponents
             List<BasketProductItemVm> basketItems = new();
             foreach (var item in products)
             {
-                basketItems.Add(new BasketProductItemVm
-                {
-                    Id = item.Id,
-                    ImageUrl = item.ImageUrl,
-                    Title = item.Title,
-                    SellPrice = (float)item.SellPrice,
-                    Description = item.Description,
-                    Count = items.FirstOrDefault(x => x.Id == item.Id).Count
-                });
+                BasketProductItemVm itemVm = item.FromProduct_ToBasketProductItemVm();
+                itemVm.Count = items.FirstOrDefault(x => x.Id == item.Id).Count;
+                basketItems.Add(itemVm);
             }
             return View(basketItems);
         }

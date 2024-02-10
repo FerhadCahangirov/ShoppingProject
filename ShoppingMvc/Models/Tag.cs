@@ -1,9 +1,8 @@
-﻿using ShoppingMvc.Models;
-
-namespace ShoppingMvc.ViewModels.TagVm
+﻿
+namespace ShoppingMvc.Models
 {
-	public class TagListItemVm
-	{
+    public class Tag : BaseEntity
+    {
         private string _title;
 
         public string Title
@@ -21,11 +20,6 @@ namespace ShoppingMvc.ViewModels.TagVm
                 }
             }
         }
-        public int Id { get; set; }
-		public bool IsDeleted { get; set; }
-		public DateTime? CreatedTime { get; set; }
-		public DateTime? UpdatedTime { get; set; }
-		public bool IsArchived { get; set; }
         public IEnumerable<ProductTag>? TagProduct { get; set; }
-	}
+    }
 }

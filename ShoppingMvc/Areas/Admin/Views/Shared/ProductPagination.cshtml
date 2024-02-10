@@ -30,7 +30,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>@item.Description</span> </div>
+            <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>@(item.Description.Length > 50 ? $"{item.Description.Substring(0, 50)}..." : item.Description )</span> </div>
             <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>@item.Discount %</span> </div>
             <div class="col-lg-2 col-sm-2 col-4 col-status">
                 

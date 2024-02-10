@@ -9,7 +9,7 @@
         cursor: not-allowed;
     }
 
-    #actionbut{
+    #actionbut {
         display: flex;
         flex-wrap: wrap;
         gap: 5px;
@@ -31,18 +31,18 @@
             <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name" style="width:0%">
                 <a class="itemside">
                     <div class="left">
-                        <img src="~/Assets/assets/products/@item.ImageUrl" class="img-sm img-thumbnail" style="width:100px" alt="Item">
+                        <img src="~/Assets/assets/products/@item.PrimaryImageName" class="img-sm img-thumbnail" style="width:100px" alt="Item">
                     </div>
                     <div class="info">
                         <h6 class="mb-0">@item.Title</h6>
                     </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:7%"> <span>@item.Description</span> </div>
-            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:8%"> <span>@item.CostPrice </span> </div>
+            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:7%"> <span>@(item.Description?.Length > 20 ? $"{item.Description.Substring(0, 20)}..." : item.Description)</span> </div>
+            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:8%"> <span>@item.Price </span> </div>
             <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:8%"> <span>@item.SellPrice </span> </div>
-            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:5%"> <span>@item.RateRange %</span> </div>
-            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:9%"> <span>@item.Category.Name </span> </div>
+            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:5%"> <span>@item.DiscountRate %</span> </div>
+            <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:9%"> <span>@item.CategoryName </span> </div>
             <div class="col-lg-2 col-sm-2 col-4 col-price" style="width:11.1%">
                 @if (item.Tags == null || item.Tags.Count() == 0)
                 {
@@ -50,15 +50,16 @@
                 }
                 else
                 {
-                    <span>@string.Join(',', item.Tags.Select(i => i.Title))</span>
+                    <span>@string.Join(',', item.Tags)</span>
                 }
             </div>
-            
-            <div class="col-lg-2 col-sm-2 col-4 col-status" style="width:6%" >
+
+            <div class="col-lg-2 col-sm-2 col-4 col-status" style="width:6%">
                 @if (item.IsArchived)
                 {
                     <span class="badge rounded-pill alert-warning">Archived</span>
-                }else if (item.IsDeleted)
+                }
+                else if (item.IsDeleted)
                 {
                     <span class="badge rounded-pill alert-danger">Disabled</span>
                 }
@@ -68,7 +69,7 @@
                 }
             </div>
             <div class="col-lg-1 col-sm-2 col-4 col-date">
-                <span>@item.CreatedTime</span>
+                <span>@item.CreatedDate</span>
             </div>
             <div class="col-lg-2 col-sm-2 col-4 col-action text-end action-buttons" id="actionbut">
                 @if (!item.IsDeleted && !item.IsArchived)
@@ -77,7 +78,7 @@
                         <i class="material-icons md-edit"></i> Archive
                     </a>
                 }
-               
+
                 @if (item.IsDeleted)
                 {
                     <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm font-sm rounded btn-brand">
@@ -103,7 +104,7 @@
                         Restore
                     </a>
                 }
-                else if(item.IsArchived)
+                else if (item.IsArchived)
                 {
                     <a asp-action="RestoreArchiveProduct" asp-route-id="@item.Id" class="btn btn-sm font-sm btn-light rounded" style="color:white ;background:orange">
                         Restore
@@ -120,7 +121,8 @@
                     <a asp-action="DeleteFromData" asp-route-id="@item.Id" class="btn btn-sm font-sm btn-light rounded remove-button" style=" color:white ;background-color: grey;">
                         <i class="material-icons md-delete_forever"></i> Remove
                     </a>
-                }else if (item.IsArchived)
+                }
+                else if (item.IsArchived)
                 {
                     <a asp-action="DeleteFromData" asp-route-id="@item.Id" class="btn btn-sm font-sm btn-light rounded remove-button" style=" color:white ;background-color: grey;">
                         <i class="material-icons md-delete_forever"></i> Remove

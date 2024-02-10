@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Models;
-using ShoppingMvc.Models.Cards;
 using ShoppingMvc.ViewModels.BasketVm;
 using ShoppingMvc.ViewModels.Commentvm;
 using ShoppingMvc.ViewModels.ProductDetailVm;
+using ShoppingMvc.ViewModels.ProductVm;
 
 namespace ShoppingMvc.Controllers
 {
@@ -23,10 +22,12 @@ namespace ShoppingMvc.Controllers
 
         private List<Comment> _comments = new List<Comment>();
 
-        // Action for displaying the page with comments
         public IActionResult Index(int id)
         {
-            Product? product = _db.Products.FirstOrDefault(x => x.Id == id);
+            Product? product = _db.Products
+                .Include(x => x.AdditionalInfos)
+                .Include(x => x.ProductImages)
+                .FirstOrDefault(x => x.Id == id);
 
             if (product == null)    
                 return NotFound();
@@ -34,7 +35,7 @@ namespace ShoppingMvc.Controllers
             ProductDetailVm model = new ()
             {
                 Comments = _db.Comments.ToList(),
-                Product = product,
+                Product = product.FromProduct_ToProductListItemVm(),
             };
 
             return View(model);
@@ -51,7 +52,6 @@ namespace ShoppingMvc.Controllers
                 {
                     UserName = commentViewModel.UserName,
                     Message = commentViewModel.Message,
-                    PostedDate = DateTime.Now
                 };
                 _db.Comments.Add(comment);
                 await _db.SaveChangesAsync();
@@ -77,7 +77,7 @@ namespace ShoppingMvc.Controllers
             var existingComment = _db.Comments.Find(reply.CommentId);
             if (existingComment == null)
             {
-                return NotFound(); // Handle case where the referenced comment doesn't exist
+                return NotFound();
             }
 
             _db.Replys.Add(reply);
@@ -85,6 +85,7 @@ namespace ShoppingMvc.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
         public async Task<IActionResult>AddBasket(int? id)
         {
             if(id==null || id<=0) return BadRequest();
@@ -107,6 +108,7 @@ namespace ShoppingMvc.Controllers
             HttpContext.Response.Cookies.Append("basket",JsonConvert.SerializeObject(basket));
             return Ok();
         }
+
         public async Task<IActionResult> RemoveBasket(int? id)
         {
             if (id == null || id <= 0) return BadRequest();

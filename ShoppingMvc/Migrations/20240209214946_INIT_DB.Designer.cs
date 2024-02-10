@@ -12,8 +12,8 @@ using ShoppingMvc.Contexts;
 namespace ShoppingMvc.Migrations
 {
     [DbContext(typeof(EvaraDbContext))]
-    [Migration("20240207214301_jujuju")]
-    partial class jujuju
+    [Migration("20240209214946_INIT_DB")]
+    partial class INIT_DB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -228,7 +228,7 @@ namespace ShoppingMvc.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Cards.Product", b =>
+            modelBuilder.Entity("ShoppingMvc.Models.AdditionalInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -236,20 +236,8 @@ namespace ShoppingMvc.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("smallmoney");
-
-                    b.Property<DateTime?>("CreatedTime")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
@@ -257,27 +245,28 @@ namespace ShoppingMvc.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("RateRange")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SellPrice")
-                        .HasColumnType("smallmoney");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("Products");
+                    b.ToTable("AdditionalInfos");
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Categories.Category", b =>
+            modelBuilder.Entity("ShoppingMvc.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -285,7 +274,7 @@ namespace ShoppingMvc.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("CreatedTime")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsArchived")
@@ -314,7 +303,7 @@ namespace ShoppingMvc.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("CreatedTime")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsArchived")
@@ -327,11 +316,17 @@ namespace ShoppingMvc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PostedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -339,7 +334,103 @@ namespace ShoppingMvc.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId1");
+
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiscountRate")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("smallmoney");
+
+                    b.Property<string>("Size")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StockNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("ShoppingMvc.Models.ProductTag", b =>
@@ -376,7 +467,7 @@ namespace ShoppingMvc.Migrations
                     b.Property<int>("CommentId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CreatedTime")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsArchived")
@@ -388,9 +479,6 @@ namespace ShoppingMvc.Migrations
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("PostedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UpdatedTime")
                         .HasColumnType("datetime2");
@@ -418,7 +506,7 @@ namespace ShoppingMvc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedTime")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -450,7 +538,7 @@ namespace ShoppingMvc.Migrations
                     b.ToTable("Sliders");
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Tags.Tag", b =>
+            modelBuilder.Entity("ShoppingMvc.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -458,7 +546,7 @@ namespace ShoppingMvc.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("CreatedTime")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsArchived")
@@ -548,9 +636,37 @@ namespace ShoppingMvc.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Cards.Product", b =>
+            modelBuilder.Entity("ShoppingMvc.Models.AdditionalInfo", b =>
                 {
-                    b.HasOne("ShoppingMvc.Models.Categories.Category", "Category")
+                    b.HasOne("ShoppingMvc.Models.Product", "Product")
+                        .WithMany("AdditionalInfos")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.Comment", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.Product", "Product")
+                        .WithMany("Comments")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingMvc.Models.AppUser", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.Product", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -559,15 +675,26 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("ShoppingMvc.Models.ProductImage", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ShoppingMvc.Models.ProductTag", b =>
                 {
-                    b.HasOne("ShoppingMvc.Models.Cards.Product", "Product")
+                    b.HasOne("ShoppingMvc.Models.Product", "Product")
                         .WithMany("TagProduct")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShoppingMvc.Models.Tags.Tag", "Tag")
+                    b.HasOne("ShoppingMvc.Models.Tag", "Tag")
                         .WithMany("TagProduct")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -589,12 +716,7 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("Comment");
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Cards.Product", b =>
-                {
-                    b.Navigation("TagProduct");
-                });
-
-            modelBuilder.Entity("ShoppingMvc.Models.Categories.Category", b =>
+            modelBuilder.Entity("ShoppingMvc.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
@@ -604,9 +726,25 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Tags.Tag", b =>
+            modelBuilder.Entity("ShoppingMvc.Models.Product", b =>
+                {
+                    b.Navigation("AdditionalInfos");
+
+                    b.Navigation("Comments");
+
+                    b.Navigation("ProductImages");
+
+                    b.Navigation("TagProduct");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.Tag", b =>
                 {
                     b.Navigation("TagProduct");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.AppUser", b =>
+                {
+                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

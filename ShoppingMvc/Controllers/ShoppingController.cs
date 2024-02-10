@@ -6,7 +6,6 @@ using ShoppingMvc.ViewModels.BasketVm;
 using ShoppingMvc.ViewModels.CommonVm;
 using ShoppingMvc.ViewModels.HomeVm;
 using ShoppingMvc.ViewModels.ProductVm;
-using ShoppingMvc.ViewModels.SliderVm;
 
 namespace ShoppingMvc.Controllers
 {
@@ -21,70 +20,25 @@ namespace ShoppingMvc.Controllers
         public async Task<IActionResult> Index()
         {
             int take = 4;
-            var items = _db.Products.Where(p => !p.IsDeleted).Take(take).Select(c => new ProductListItemVm
-            {
-                Id = c.Id,
-                CreatedTime = c.CreatedTime,
-                UpdatedTime = c.UpdatedTime,
-                ImageUrl = c.ImageUrl,
-                IsDeleted = c.IsDeleted,
-                IsArchived = c.IsArchived,
-                Title = c.Title,
-                Description = c.Description,
-                CostPrice = c.CostPrice,
-                SellPrice = c.SellPrice,
-                Category = c.Category,
-                RateRange = c.RateRange,
-                Tags = c.TagProduct.Select(p => p.Tag)
-            });
+            var items = _db.Products.Where(p => !p.IsDeleted).Take(take).Select(p => p.FromProduct_ToProductListItemVm());
             int count = await _db.Products.CountAsync(x => !x.IsDeleted);
             PaginationVm<IEnumerable<ProductListItemVm>> pag = new(count, 1, (int)Math.Ceiling((decimal)count / take), items);
             HomeVm vm = new HomeVm
             {
-                ProductListItems = await _db.Products.Select(c => new ProductListItemVm
-                {
-                    Id = c.Id,
-                    CreatedTime = c.CreatedTime,
-                    UpdatedTime = c.UpdatedTime,
-                    ImageUrl = c.ImageUrl,
-                    IsDeleted = c.IsDeleted,
-                    IsArchived = c.IsArchived,
-                    Title = c.Title,
-                    Description = c.Description,
-                    CostPrice = c.CostPrice,
-                    SellPrice = c.SellPrice,
-                    Category = c.Category,
-                    RateRange = c.RateRange,
-                    Tags = c.TagProduct.Select(p => p.Tag)
-                }).ToListAsync(),
+                ProductListItems = await _db.Products.Select(p => p.FromProduct_ToProductListItemVm()).ToListAsync(),
             };
             return View(vm);
-            
+
         }
         public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)
         {
-            var items = _db.Products.Where(p => !p.IsDeleted).Skip((page - 1) * count).Take(count).Select(c => new ProductListItemVm
-            {
-                Id = c.Id,
-                CreatedTime = c.CreatedTime,
-                UpdatedTime = c.UpdatedTime,
-                ImageUrl = c.ImageUrl,
-                IsDeleted = c.IsDeleted,
-                IsArchived = c.IsArchived,
-                Title = c.Title,
-                Description = c.Description,
-                CostPrice = c.CostPrice,
-                SellPrice = c.SellPrice,
-                Category = c.Category,
-                RateRange = c.RateRange,
-                Tags = c.TagProduct.Select(p => p.Tag)
-            });
+            var items = _db.Products.Where(p => !p.IsDeleted).Skip((page - 1) * count).Take(count).Select(p => p.FromProduct_ToProductListItemVm());
             int totalCount = await _db.Products.CountAsync(x => !x.IsDeleted);
             PaginationVm<IEnumerable<ProductListItemVm>> pag = new(totalCount, page, (int)Math.Ceiling((decimal)totalCount / count), items);
 
             return PartialView("_ShopProductPartial", pag);
         }
-        
+
         public async Task<IActionResult> AddBasket(int? id)
         {
             if (id == null || id <= 0) return BadRequest();

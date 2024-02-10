@@ -1,6 +1,4 @@
-﻿using ShoppingMvc.Models.Cards;
-using ShoppingMvc.Models.Tags;
-using System.Reflection.Metadata;
+﻿using System.Reflection.Metadata;
 
 namespace ShoppingMvc.Models
 {

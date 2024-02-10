@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\Admin\assets\fonts\material-icon\css\" />
     <Folder Include="wwwroot\Assets\assets\users\" />
     <Folder Include="wwwroot\Assets\assets\products\" />

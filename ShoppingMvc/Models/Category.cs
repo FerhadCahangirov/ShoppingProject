@@ -1,8 +1,6 @@
-﻿using ShoppingMvc.Models.Cards;
-
-namespace ShoppingMvc.Models.Categories
+﻿namespace ShoppingMvc.Models
 {
-    public class Category:BaseEntity
+    public class Category : BaseEntity
     {
         public string Name { get; set; }
         public IEnumerable<Product> Products { get; set; }
