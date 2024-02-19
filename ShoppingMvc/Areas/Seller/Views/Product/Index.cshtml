@@ -1,0 +1,190 @@
+﻿@model PaginationVm<IEnumerable<ProductListItemVm>>
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section scripts {
+    <script>
+
+        function applyFilters() {
+            var categoryFilter = document.getElementById('categoryFilter');
+            var categoryValue = categoryFilter.options[categoryFilter.selectedIndex].text;
+            var dateFilter = $("#dateFilter").val();
+            var statusFilter = $("#statusFilter").val();
+            var searchFilter = $("#searchFilter").val();
+
+            $.ajax({
+                url: '/Seller/Product/ProductPagination',
+                type: 'GET',
+                data: {
+                    categoryFilter: categoryValue,
+                    dateFilter: dateFilter,
+                    statusFilter: statusFilter,
+                    searchFilter: searchFilter
+                },
+                success: function (data) {
+                    document.querySelector('#productsbody').innerHTML = data;
+
+                    localStorage.setItem("categoryFilter", categoryFilter);
+                    localStorage.setItem("dateFilter", dateFilter);
+                    localStorage.setItem("statusFilter", statusFilter);
+                    localStorage.setItem("searchFilter", searchFilter);
+                },
+                error: function () {
+                    console.log('Error applying filters');
+                }
+            })
+        }
+
+    </script>
+
+
+    @if (TempData["Create"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @if ((bool)TempData["Create"] == true)
+        {
+            <script>
+                Swal.fire({
+                    position: "top-center",
+                    icon: "success",
+                    title: "Data Created",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                Swal.fire({
+                    position: "top-center",
+                    icon: "error",
+                    title: "Something went wrong",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        }
+    }
+    @if (TempData["Delete"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        @if ((bool)TempData["Delete"] == true)
+        {
+            <script>
+                // Display success message if the deletion was successful
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                // Display error message if something went wrong
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            </script>
+        }
+    }
+    @if (TempData["Update"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        @if ((bool)TempData["Update"] == true)
+        {
+            <script>
+                Swal.fire({
+                    title: "Data Updated",
+                    text: "Your file has been Updated",
+                    icon: "success"
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            </script>
+        }
+    }
+
+}
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Product List</h2>
+        </div>
+        <div>
+            <a href="/Seller/Product/Create" class="btn btn-primary btn-sm rounded">Create new</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col col-check flex-grow-0">
+                    <div class="form-check ms-2">
+                        <input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox" onclick="selectAllCheckboxes()">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <input type="text" placeholder="Search..." class="form-control" id="searchFilter" oninput="applyFilters()">
+                </div>
+                <div class="col-md-3 col-12 mb-md-0 mb-3">
+                    <select class="form-control" id="categoryFilter" asp-items='@ViewBag.Categories' onchange="applyFilters()">
+                        <option selected>Show all</option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-6">
+                    <input type="date" id="dateFilter" class="form-control" onchange="applyFilters()">
+                </div>
+                <div class="col-md-2 col-6">
+                    <select class="form-select" id="statusFilter" onchange="applyFilters()">
+
+                        <option>All statuses</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Archived</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+
+            </div>
+        </header> <!-- card-header end// -->
+
+
+        <div class="card-body" id="productsbody">
+            <partial model="Model" name="ProductPagination" />
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+
+
+</section> <!-- content-main end// -->
+
+<footer class="main-footer font-xs">
+    <div class="row pb-30 pt-15">
+        <div class="col-sm-6">
+            <script>
+                document.write(new Date().getFullYear())
+            </script> ©, Evara - HTML Ecommerce Template .
+        </div>
+        <div class="col-sm-6">
+            <div class="text-sm-end">
+                All rights reserved
+            </div>
+        </div>
+    </div>
+</footer>

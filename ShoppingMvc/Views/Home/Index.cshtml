@@ -1,71 +1,69 @@
 ﻿@model HomeVm
 
-@section styles{
-    w
+@section styles{                                                              
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 }
 @section scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        $("body").on("click", ".action-btn", function (ev) {
-            ev.preventDefault();
-            fetch($(this).attr("href"))
-                .then(res => {
-                    if (res.ok) {
 
-                        Command: toastr["success"]("Product added")
-                        toastr.options = {
-                            "closeButton": false,
-                            "debug": false,
-                            "newestOnTop": false,
-                            "progressBar": false,
-                            "positionClass": "toast-top-right",
-                            "preventDuplicates": false,
-                            "onclick": null,
-                            "showDuration": "300",
-                            "hideDuration": "500",
-                            "timeOut": "1000",
-                            "extendedTimeOut": "1000",
-                            "showEasing": "swing",
-                            "hideEasing": "linear",
-                            "showMethod": "fadeIn",
-                            "hideMethod": "fadeOut"
-                        }
+        function fetchBasket() {
+            fetch(window.location.origin + '/Basket/Index')
+                .then(res => res.text())
+                .then(data => $("#basket").html(data));
+        }
 
-                        fetch(window.location.origin + '/Home/GetBasket')
-                            .then(res => res.text())
-                            .then(data => $("#basket").html(data))
-                    }
-                })
-        });
-        $("body").on("click", ".deleted", function (ev) {
-            ev.preventDefault();
-            $(this).closest('.lists').remove();
-            alert($(this).attr("href"))
-            fetch($(this).attr("href"))
-                .then(res => {
-                    if (res.ok) {
-                        Command: toastr["danger"]("Product deleted")
-                        toastr.options = {
-                            "closeButton": false,
-                            "debug": false,
-                            "newestOnTop": false,
-                            "progressBar": false,
-                            "positionClass": "toast-top-right",
-                            "preventDuplicates": false,
-                            "onclick": null,
-                            "showDuration": "300",
-                            "hideDuration": "500",
-                            "timeOut": "1000",
-                            "extendedTimeOut": "1000",
-                            "showEasing": "swing",
-                            "hideEasing": "linear",
-                            "showMethod": "fadeIn",
-                            "hideMethod": "fadeOut"
-                        }
-                    }
-                })
-        });
+        function addProductToBasket(productId) {
+
+                $.ajax({
+                    url: `/Basket/AddProductToBasket/${productId}`,
+                    type: 'POST',
+                }).done(function (data) {
+                    Command: toastr["success"]("Product added");
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "500",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    };
+
+                    fetchBasket();
+
+                }).fail(function () {
+                    Command: toastr["danger"]("Product deleted");
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "500",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    };
+                });
+        };
+
+
+        fetchBasket();
     </script>
 }
 <main class="main">
@@ -82,8 +80,8 @@
                                 <div class="col-lg-5 col-md-6">
                                     <div class="hero-slider-content-2">
                                         <h4 class="animated">@item.Title</h4>
-                                        <h2 class="animated fw-900">@item.Description</h2>
-                                        <h1 class="animated fw-900 text-brand">@item.Title</h1>
+
+
                                         <p class="animated">Save more with coupons & up to @item.Discount off</p>
                                         <a class="animated btn btn-brush btn-brush-3" href="shop-product-right.html"> @item.Button </a>
                                     </div>
@@ -169,54 +167,50 @@
                         @foreach (var item in Model.ProductListItems)
                         {
                             <div class="col-lg-3 col-md-4 col-12 col-sm-6">
-
-                                @if (!item.IsDeleted && !item.IsArchived)
-                                {
-                                    <div class="product-cart-wrap mb-30">
-                                        <div class="product-img-action-wrap">
-                                            <div class="product-img product-img-zoom">
-                                                <a href="ProductDetails/Index/@item.Id">
-                                                    <img class="default-img"
-                                                         src="@(!string.IsNullOrEmpty(item.PrimaryImageName) ? $"/Assets/assets/products/{item.PrimaryImageName}" : "")"
-                                                         alt="">
-                                                </a>
-                                            </div>
-                                            <div class="product-action-1">
-                                                <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                                <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
-                                            </div>
-
-                                            @if (item.Tags != null)
-                                            {
-                                                foreach (var tag in item.Tags)
-                                                {
-                                                    <div class="product-badges product-badges-position product-badges-mrg">
-                                                        <span class="hot">@tag</span>
-                                                    </div>
-                                                }
-                                            }
+                                <div class="product-cart-wrap mb-30">
+                                    <div class="product-img-action-wrap">
+                                        <div class="product-img product-img-zoom">
+                                            <a href="ProductDetails/Index/@item.Id">
+                                                <img class="default-img"
+                                                     src="@(!string.IsNullOrEmpty(item.PrimaryImageName) ? $"/Assets/assets/products/{item.PrimaryImageName}" : "/Assets/assets/imgs/shop/product-2-1.jpg")"
+                                                     alt="">
+                                            </a>
                                         </div>
-                                        <div class="product-content-wrap">
-                                            <div class="product-category">
-                                                <a href="shop-grid-right.html">@item.CategoryName</a>
+                                        <div class="product-action-1">
+                                            <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
+                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+
+                                        </div>
+
+                                        @if (item.Tags != null)
+                                        {
+                                            <div class="product-badges product-badges-position product-badges-mrg">
+                                                <span class="hot">@item.Tags.First()</span>
                                             </div>
-                                            <h2><a href="shop-product-right.html"></a>@item.Title</h2>
-                                            <div class="rating-result" title="90%">
-                                                <span>
-                                                    <span>@item.DiscountRate%</span>
-                                                </span>
-                                            </div>
-                                            <div class="product-price">
-                                                <span>$@item.SellPrice </span>
-                                                <span class="old-price">$@item.Price</span>
-                                            </div>
-                                            <div class="product-action-1 show">
-                                                <a asp-action="AddBasket" asp-controller="ProductDetails" asp-route-id="@item.Id" aria-label="Add To Cart" class="action-btn hover-up"><i class="fi-rs-shopping-bag-add"></i></a>
+                                        }
+                                    </div>
+                                    <div class="product-content-wrap">
+                                        <div class="product-category">
+                                            <a href="shop-grid-right.html">@item.CategoryName</a>
+                                        </div>
+                                        <h2><a href="shop-product-right.html"></a>@item.Title</h2>
+                                        <div class="rating-result" title="90%">
+                                            <span>
+                                                <span>@item.DiscountRate%</span>
+                                            </span>
+                                        </div>
+                                        <div class="product-price">
+                                            <span>$@item.SellPrice </span>
+                                            <span class="old-price">$@item.Price</span>
+                                        </div>
+                                        <div class="product-action-1 show">
+                                            <div onclick="addProductToBasket(@item.Id)" aria-label="Add To Cart" class="action-btn hover-up">
+                                                <i class="fi-rs-shopping-bag-add"></i>
                                             </div>
                                         </div>
                                     </div>
-                                }
+                                </div>
+
                             </div>
 
                         }

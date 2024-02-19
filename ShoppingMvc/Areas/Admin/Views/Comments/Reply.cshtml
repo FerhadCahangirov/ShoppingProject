@@ -1,9 +1,0 @@
-﻿@model Reply
-
-@using (Html.BeginForm("AddReply", "Comments"))
-{
-    @Html.HiddenFor(model => model.CommentId)
-    @Html.TextAreaFor(model => model.Message, new { @class = "form-control", placeholder = "Write Reply" })
-    @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", placeholder = "Name" })
-    <button type="submit" class="btn btn-primary">Submit Reply</button>
-}

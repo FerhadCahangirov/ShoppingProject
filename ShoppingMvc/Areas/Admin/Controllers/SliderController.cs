@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Helpers;
 using ShoppingMvc.Models;
 using ShoppingMvc.ViewModels.CommonVm;
 using ShoppingMvc.ViewModels.SliderVm;
-using System.Reflection.Metadata;
 
 namespace ShoppingMvc.Areas.Admin.Controllers
 {
@@ -17,30 +15,14 @@ namespace ShoppingMvc.Areas.Admin.Controllers
     {
         EvaraDbContext _db { get; set; }
         IWebHostEnvironment _env { get; set; }
+
         public SliderController(EvaraDbContext db, IWebHostEnvironment env)
         {
             _db = db;
             _env = env;
         }
 
-
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _db.Sliders.Select(c => new SliderListItemVm
-        //    {
-        //        Id = c.Id,
-        //        CreatedTime = c.CreatedTime,
-        //        UpdatedTime = c.UpdatedTime,
-        //        ImageUrl = c.ImageUrl,
-        //        IsDeleted = c.IsDeleted,
-        //        Title = c.Title,
-        //        Description = c.Description,
-        //        Discount = c.Discount,
-        //        Button = c.Button,
-        //    }).ToListAsync());
-        //}
-
-        public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)
+        public async Task<IActionResult> SliderPagination(int page = 1, int count = 4)
         {
             var items = await _db.Sliders.Skip((page - 1) * count).Take(count).Select(c => new SliderListItemVm
             {
@@ -56,9 +38,10 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             }).ToListAsync();
             int totalCount = await _db.Sliders.CountAsync();
             PaginationVm<IEnumerable<SliderListItemVm>> pag = new(totalCount, page, (int)Math.Ceiling((decimal)totalCount / count), items);
-            return PartialView("ProductPagination", pag);
+            return PartialView("SliderPagination", pag);
         }
-        public async Task<IActionResult> Index(string categoryFilter, DateTime? dateFilter, string statusFilter, int page = 1)
+
+        public async Task<IActionResult> Index(int page = 1)
         {
             int take = 4;
             int skip = (page - 1) * take;
@@ -76,27 +59,10 @@ namespace ShoppingMvc.Areas.Admin.Controllers
                 Button = c.Button,
             });
 
-            // Apply category filter
-            if (!string.IsNullOrEmpty(categoryFilter) && categoryFilter != "All categories")
-            {
-                query = query.Where(c => c.Title == categoryFilter);
-            }
-
-            if (dateFilter.HasValue)
-            {
-                DateTime filterDate = dateFilter.Value.Date;
-
-                query = query.Where(c => c.CreatedTime.Value.Date == filterDate);
-            }
 
             query = query.OrderBy(c => c.CreatedTime); 
 
             var results = query.ToList();
-
-            if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "All statuses" && statusFilter != "Show all")
-            {
-                query = query.Where(c => c.IsDeleted && statusFilter == "Disabled" || !c.IsDeleted && statusFilter == "Active");
-            }
 
             var filteredData = await query.ToListAsync();
 
@@ -120,7 +86,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Cancel()
         {
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Admin/Slider/Index");
         }
         [HttpPost]
         public async Task<IActionResult> Create(SliderCreateVm vm)
@@ -158,7 +124,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             _db.Sliders.AddAsync(slider);
             await _db.SaveChangesAsync();
             TempData["Create"] = true;
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Admin/Slider/Index");
         }
         public async Task<IActionResult> Update(int? id)
         {
@@ -195,6 +161,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
                     ModelState.AddModelError("ImageFile", "Files length must be less than kb");
                 }
             }
+
             var data = await _db.Sliders.FindAsync(id);
             if (data == null) return NotFound();
             data.Title = vm.Title;
@@ -217,7 +184,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             data.ImageUrl = filename;
             await _db.SaveChangesAsync();
             TempData["Update"] = true;
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Admin/Slider/Index");;
         }
         public async Task<IActionResult> DeleteProduct(int? id)
         {
@@ -228,7 +195,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             
             data.IsDeleted = true;
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Admin/Slider/Index");;
         }
         public async Task<IActionResult> RestoreProduct(int? id)
         {
@@ -237,7 +204,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             if (data == null) return NotFound();
             data.IsDeleted = false;
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Admin/Slider/Index");;
         }
         public async Task<IActionResult> DeleteFromData(int? id)
         {
@@ -248,7 +215,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             TempData["Delete"] = true;
             _db.Sliders.Remove(data);
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Admin/Slider/Index");;
         }
     }
 }

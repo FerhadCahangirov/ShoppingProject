@@ -1,6 +1,4 @@
-﻿
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="no-js" lang="en">
 
 <head>
@@ -55,14 +53,34 @@
                                         <li><a href="#"><img src="~/Assets/assets/imgs/theme/flag-ru.png" alt="">Pусский</a></li>
                                     </ul>
                                 </li>
-
-                                @if (User.Identity.IsAuthenticated)
+                                @if (User.Identity.IsAuthenticated && !User.IsInRole("Seller"))
                                 {
-                                    <li><i class="fi-rs-user"></i><a style="font-size:15px">Hi, @User.Identity.Name &#128509;</a><span> / </span><a asp-action="Logout" asp-controller="Auth">Logout</a></li>
+
+                                    <li><i class="fi-rs-user"></i><a style="font-size:15px">Hi, @User.Identity.Name &#128509;</a></li>
+                                    <li>
+                                        <a asp-action="Logout" asp-controller="Auth">Logout</a>
+                                    </li>
+                                    <li><a asp-action="SellerRegistration" asp-controller="Auth">Be a seller</a></li>
+                                }
+                                else if (User.Identity.IsAuthenticated)
+                                {
+                                    <li>
+                                        <a style="font-size:15px">Hi, @User.Identity.Name &#128509;</a>
+                                    </li>
+                                    <li>
+                                        <a asp-action="Logout" asp-controller="Auth">Logout</a>
+                                    </li>
                                 }
                                 else
                                 {
-                                    <li><i class="fi-rs-user"></i><a asp-controller="Auth" asp-action="Login">Log In</a><span>/</span><a asp-controller="Auth" asp-action="Register">Sign Up</a></li>
+                                    <li><a asp-controller="Auth" asp-action="Login">Log In</a></li>
+                                    <li>
+                                        <a asp-controller="Auth" asp-action="Register">Sign Up</a>
+                                    </li>
+                                }
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li><i class="fi fi-rr-settings"></i><a asp-controller="Auth" asp-action="ProfileSettings">Settings</a></li>
                                 }
                             </ul>
                         </div>
@@ -81,7 +99,7 @@
                             <ul>
                                 <li>
                                     <a class="active" asp-controller="Home" asp-action="Index">Home</a>
-                                    
+
                                 </li>
                                 <li>
                                     <a href="shop-grid-right.html">Shop <i class="fi-rs-angle-down"></i></a>
@@ -598,5 +616,4 @@
 
 </html>
 
-        
-    
+

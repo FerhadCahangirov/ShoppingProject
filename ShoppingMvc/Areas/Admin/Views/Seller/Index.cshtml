@@ -1,0 +1,169 @@
+﻿@model PaginationVm<IEnumerable<SellerListItemVm>>
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section scripts{
+    <script>
+
+        function applyFilters() {
+            var dateFilter = $("#dateFilter").val();
+            var statusFilter = $("#statusFilter").val();
+            var searchFilter = $("#searchFilter").val();
+
+            // Use AJAX to send filter values to the server
+            $.ajax({
+                url: '/Admin/Seller/SellerPagination',
+                type: 'GET',
+                data: {
+                    dateFilter: dateFilter,
+                    statusFilter: statusFilter,
+                    searchFilter: searchFilter,
+                    page: 1, 
+                    size: 4
+                },
+                success: function (data) {
+                    document.querySelector('#sellerBody').innerHTML = data;
+
+                    localStorage.setItem("dateFilter", dateFilter);
+                    localStorage.setItem("statusFilter", statusFilter);
+                    localStorage.setItem("searchFilter", searchFilter);
+                },
+                error: function () {
+                    // Handle errors if needed
+                    console.log('Error applying filters');
+                }
+            });
+
+        }
+
+    </script>
+    @if (TempData["Create"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @if ((bool)TempData["Create"] == true)
+        {
+            <script>
+                Swal.fire({
+                    position: "top-center",
+                    icon: "success",
+                    title: "Data Created",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                Swal.fire({
+                    position: "top-center",
+                    icon: "error",
+                    title: "Something went wrong",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        }
+    }
+    @if (TempData["Delete"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        @if ((bool)TempData["Delete"] == true)
+        {
+            <script>
+                // Display success message if the deletion was successful
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                // Display error message if something went wrong
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            </script>
+        }
+    }
+    @if (TempData["Update"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        @if ((bool)TempData["Update"] == true)
+        {
+            <script>
+                Swal.fire({
+                    title: "Data Updated",
+                    text: "Your file has been Updated",
+                    icon: "success"
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            </script>
+        }
+    }
+
+}
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Seller list</h2>
+        <div>
+            <a href="#" class="btn btn-primary"><i class="material-icons md-plus"></i> Create new</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control" id="searchFilter" oninput="applyFilters()">
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <input type="date" id="dateFilter" class="form-control" oninput="applyFilters()"> 
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="statusFilter" onchange="applyFilters()">
+                        <option>Show all</option>
+                        <option>Approved</option>
+                        <option>Not Approved</option>
+                    </select>
+                </div>
+            </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body" id="sellerBody">
+            <partial model="Model" name="SellerPagination" />
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+
+</section> <!-- content-main end// -->
+<footer class="main-footer font-xs">
+    <div class="row pb-30 pt-15">
+        <div class="col-sm-6">
+            <script>
+                document.write(new Date().getFullYear())
+            </script> ©, Evara - HTML Ecommerce Template .
+        </div>
+        <div class="col-sm-6">
+            <div class="text-sm-end">
+                All rights reserved
+            </div>
+        </div>
+    </div>
+</footer>

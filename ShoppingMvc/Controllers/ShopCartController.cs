@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.ViewModels.HomeVm;
@@ -6,6 +7,7 @@ using ShoppingMvc.ViewModels.ProductVm;
 
 namespace ShoppingMvc.Controllers
 {
+    [Authorize(Policy = "AuthRequiredPolicy")]
     public class ShopCartController : Controller
     {
         EvaraDbContext _db { get; set; }
@@ -20,7 +22,7 @@ namespace ShoppingMvc.Controllers
             {
                 ProductListItems = await _db.Products.Select(p => p.FromProduct_ToProductListItemVm()).ToListAsync()
             };
-            return View();
+            return View(); 
         }
         public string GetCookie(string key)
         {

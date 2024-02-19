@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BasketProductItemVm>
+﻿@model BasketTotalVm
 
 <div class="col-md-6">
     <div class="order_review">
@@ -14,21 +14,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Items)
                     {   
                         
                         <tr>
-                            <td class="image product-thumbnail"><img src="~/Assets/assets/products/@item.ImageUrl" alt="#"></td>
+                            <td class="image product-thumbnail">
+                                <img class="default-img"
+                                     src="@(!string.IsNullOrEmpty(item.Product.PrimaryImageName) ? $"/Assets/assets/products/{item.Product.PrimaryImageName}" : "/Assets/assets/imgs/shop/product-2-1.jpg")"
+                                     alt="">
+                                </td>
                             <td>
-                                <h5><a href="shop-product-full.html">@item.Title</a></h5> <span class="product-qty">x @item.Count</span>
+                                <h5><a href="shop-product-full.html">@item.Product.Title</a></h5> <span class="product-qty">x @item.Count</span>
                             </td>
-                            <td>$ @(item.SellPrice * item.Count)</td>
+                            <td>$ @item.TotalItemPrice</td>
                         </tr>
                     }
 
                     <tr>
                         <th>SubTotal</th>
-                        <td class="product-subtotal" colspan="2">$ @Model.Sum(p => p.SellPrice * p.Count)</td>
+                        <td class="product-subtotal" colspan="2">$ @Model.TotalPrice</td>
                     </tr>
                     <tr>
                         <th>Shipping</th>
@@ -36,7 +40,7 @@
                     </tr>
                     <tr>
                         <th>Total</th>
-                        <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">$ @Model.Sum(p => p.SellPrice * p.Count)</span></td>
+                        <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">$ @Model.TotalPrice</span></td>
                     </tr>
                 </tbody>
             </table>

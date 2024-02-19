@@ -1,5 +1,5 @@
 ﻿using ShoppingMvc.Models;
-using ShoppingMvc.ViewModels.Commentvm;
+using ShoppingMvc.ViewModels.CommentVm;
 using ShoppingMvc.ViewModels.CommonVm;
 using ShoppingMvc.ViewModels.ProductVm;
 using ShoppingMvc.ViewModels.SliderVm;

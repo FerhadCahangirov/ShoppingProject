@@ -1,4 +1,5 @@
-﻿using ShoppingMvc.Models;
+﻿using ShoppingMvc.Enums;
+using ShoppingMvc.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,7 +19,14 @@ namespace ShoppingMvc.ViewModels.ProductVm
         public int DiscountRate { get; set; }
         public int StockNumber { get; set; }
         public string? Color { get; set; }
-        public string? Size { get; set; }
+        
+        public decimal Width { get; set; }
+        public decimal Height { get; set; }
+        public decimal Weight { get; set; }
+        public decimal ShippingFee { get; set; }
+
+        public ProductConditionEnum Condition {  get; set; }
+        
         public int CategoryId { get; set; }
         public List<int>? TagsId { get; set; }
         
@@ -40,9 +48,13 @@ namespace ShoppingMvc.ViewModels.ProductVm
                 DiscountRate = product.DiscountRate,
                 StockNumber = product.StockNumber,
                 Color = product.Color,
-                Size = product.Size,
-                CategoryId = product.CategoryId,
-                TagsId = product?.TagProducts?.Select(tp => tp.TagId).ToList(),
+                Width = product.Width,
+                Height = product.Height,
+                Weight = product.Weight,
+                ShippingFee = product.ShippingFee,
+                CategoryId = product.Category.Id,
+                Condition = product.Condition,
+                TagsId = product?.Tags?.Select(t => t.Id).ToList(),
                 AdditionalInfos = product?.AdditionalInfos?.ToList(),
                 ProductImagesData = product?.ProductImages
             };

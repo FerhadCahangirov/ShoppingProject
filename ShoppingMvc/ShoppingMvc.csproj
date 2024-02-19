@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.26" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.25" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.25" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.25" />
@@ -21,8 +23,26 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\Admin\assets\fonts\material-icon\css\" />
+    <Folder Include="wwwroot\Assets\assets\userProfiles\" />
+    <Folder Include="wwwroot\Assets\assets\sellerImages\" />
+    <Folder Include="wwwroot\Assets\assets\sellerIdentities\" />
     <Folder Include="wwwroot\Assets\assets\users\" />
     <Folder Include="wwwroot\Assets\assets\products\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Assets\assets\imgs\theme\favicon.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-cart.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-dribbble.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-email.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-facebook.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-heart.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-instagram.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-pinterest.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-twitter.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\icons\icon-youtube.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\logo-2.svg" />
+    <None Include="wwwroot\Assets\assets\imgs\theme\logo.svg" />
   </ItemGroup>
 
 </Project>

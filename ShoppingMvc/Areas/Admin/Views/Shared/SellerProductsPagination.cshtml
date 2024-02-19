@@ -1,0 +1,59 @@
+﻿@model SellerListItemVm;
+
+
+<script>
+    function handlePagination(sellerId, page, size) {
+        $.ajax({
+            type: 'POST',
+            url: `/Admin/Seller/SellerProductsPagination/${sellerId}`,
+            data: { page: page, size: size },
+            success: function (data) {
+                $("#hellobody").html(data)
+            }
+        })
+    }
+</script>
+
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Products by seller</h5>
+        <div class="row">
+            @if(Model.Products.Items != null)
+            {
+                @foreach(var item in Model.Products.Items)
+                {
+                    <div class="col-xl-2 col-lg-3 col-md-6">
+                        <div class="card card-product-grid">
+                            <a href="#" class="img-wrap"> <img src="@(string.IsNullOrEmpty(item.PrimaryImageUrl) ? "/Assets/assets/imgs/items/1.jpg" : $"/{item.PrimaryImageUrl}")" alt="Product"> </a>
+                            <div class="info-wrap">
+                                <a href="#" class="title">@item.Title</a>
+                                <div class="price mt-1">@item.Price $</div> <!-- price-wrap.// -->
+                            </div>
+                        </div> <!-- card-product  end// -->
+                    </div> <!-- col.// -->
+                }
+            }
+            
+        </div> <!-- row.// -->
+    </div> <!--  card-body.// -->
+</div> <!--  card.// -->
+
+<div class="pagination-area mt-30 mb-50">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start" id="prod-pag">
+            <li class="page-item @(Model.Products.HasPrev ? "" : "disabled")">
+                <div class="page-link" onclick="handlePagination(@Model.SellerData.Id, @(Model.Products.CurrentPage - 1), 4)" style="width:43px"><</div>
+            </li>
+            @for (int i = 1; i <= Model.Products.LastPage; i++)
+            {
+                <li class="page-item @(i == Model.Products.CurrentPage ? "active" : "")">
+                    <div class="page-link" onclick="handlePagination(@Model.SellerData.Id, @i, 4)" style="width:44px">0 @i</div>
+                </li>
+            }
+            <li class="page-item @(Model.Products.LastPage > 1 && Model.Products.HasNext ? "" : "disabled")">
+                <div class="page-link" onclick="handlePagination(@Model.SellerData.Id, @(Model.Products.CurrentPage + 1), 4)" style="width:43px">></div>
+            </li>
+        </ul>
+    </nav>
+</div>

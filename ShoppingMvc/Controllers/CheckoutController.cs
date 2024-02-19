@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.ViewModels.HomeVm;
@@ -7,6 +8,7 @@ using ShoppingMvc.ViewModels.SliderVm;
 
 namespace ShoppingMvc.Controllers
 {
+    [Authorize(Policy = "AuthRequiredPolicy")]
     public class CheckoutController : Controller
     {
         EvaraDbContext _db { get; set; }

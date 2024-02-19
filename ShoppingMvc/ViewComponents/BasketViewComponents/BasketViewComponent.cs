@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
+using ShoppingMvc.Models;
 using ShoppingMvc.ViewModels.BasketVm;
-using System.Text.Json.Serialization;
+using ShoppingMvc.ViewModels.ProductVm;
 
 namespace ShoppingMvc.ViewComponents.BasketViewComponents
 {
+    [Authorize(Policy = "AuthRequiredPolicy")]
     public class BasketViewComponent : ViewComponent
     {
         EvaraDbContext _db { get; set; }
@@ -16,16 +19,36 @@ namespace ShoppingMvc.ViewComponents.BasketViewComponents
         }
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var items = JsonConvert.DeserializeObject<List<BasketProductandCountVm>>(HttpContext.Request.Cookies["basket"] ?? "[]");
-            var products = _db.Products.Where(p => items.Select(b => b.Id).Contains(p.Id));
-            List<BasketProductItemVm> basketItems = new();
-            foreach (var item in products)
+            var username = HttpContext.User.Identity?.Name;
+
+            var basketItemsQuery = _db.BasketItems
+                .Include(bi => bi.Basket)
+                .ThenInclude(b => b.User)
+                .Include(bi => bi.Product)
+                .ThenInclude(bi => bi.ProductImages)
+                .Where(bi => bi.Basket.User.UserName == username && !bi.Basket.IsOrdered);
+
+            decimal totalPrice = basketItemsQuery.ToList().Sum(bi =>
+                ((bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) + bi.Product.ShippingFee) * bi.Count);
+
+
+            var basketItems = await basketItemsQuery
+            .Select(bi => new BasketProductItemVm()
             {
-                BasketProductItemVm itemVm = item.FromProduct_ToBasketProductItemVm();
-                itemVm.Count = items.FirstOrDefault(x => x.Id == item.Id).Count;
-                basketItems.Add(itemVm);
-            }
-            return View(basketItems);
+                Id = bi.Id,
+                Count = bi.Count,
+                Product = bi.Product.FromProduct_ToProductListItemVm(),
+                Basket = bi.Basket,
+                TotalItemPrice = (((bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) + bi.Product.ShippingFee) * bi.Count).ToString("")
+            }).ToListAsync();
+
+            var viewModel = new BasketTotalVm()
+            {
+                TotalPrice = totalPrice.ToString("0.00"),
+                Items = basketItems
+            };
+
+            return View(viewModel);
         }
     }
 }

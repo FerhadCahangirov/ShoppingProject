@@ -43,7 +43,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Create Slider</h6>
     </div>
     <div class="card-body">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label asp-for="Title"></label>
                 <input asp-for="Title" class="form-control">
@@ -79,7 +79,7 @@
             </div>
             <div class="text" style="margin-top:10px">
                 <button class="btn btn-success" style="color:white;background:#088178!important">Create</button>
-                <a asp-controller="Slider" asp-action="Cancel" class="btn btn-danger">Cancel</a>
+                <a href="/Admin/Slider/Cancel" class="btn btn-danger">Cancel</a>
 
             </div>
         </form>

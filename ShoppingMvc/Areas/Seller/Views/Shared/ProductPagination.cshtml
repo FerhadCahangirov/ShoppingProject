@@ -1,0 +1,183 @@
+﻿@model PaginationVm<IEnumerable<ProductListItemVm>>
+@{
+    Layout = null;
+}
+
+<style>
+    .pagination .page-item.disabled:hover a {
+        background-color: grey;
+        cursor: not-allowed;
+    }
+
+    #actionbut {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        width: 16%;
+        justify-content: space-between;
+    }
+</style>
+
+<script>
+    function handlePagination(page, size) {
+        var searchFilter = localStorage.getItem("searchFilter");
+        var dateFilter = localStorage.getItem("dateFilter");
+        var statusFilter = localStorage.getItem("statusFilter");
+        var categoryFilter = localStorage.getItem("categoryFilter");
+
+        $.ajax({
+            type: 'POST',
+            url: '/Seller/Product/ProductPagination',
+            data: {
+                page: page,
+                size: size,
+                searchFilter: searchFilter,
+                dateFilter: dateFilter,
+                statusFilter: statusFilter,
+                categoryFilter: categoryFilter
+            },
+            success: function (data) {
+                $("#productsbody").html(data)
+            }
+        })
+    }
+</script>
+
+@if (Model.Items != null)
+{
+    @foreach (var item in Model.Items)
+    {
+        <article class="itemlist">
+            <div class="row align-items-center">
+
+                <div class="col col-check flex-grow-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                    <a class="itemside" href="#">
+                        <div class="left">
+                            <img src="~/Assets/assets/products/@item.PrimaryImageName" class="img-sm img-thumbnail" style="width:100px" alt="Item">
+                        </div>
+                        <div class="info">
+                            <h6 class="mb-0">@item.Title</h6>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-2 col-sm-2 col-4 col-price">
+                    <span>$@(item.Price)</span>
+                </div>
+
+                <div class="col-lg-2 col-sm-2 col-4 col-price">
+                    @if (item.IsArchived)
+                    {
+                        <span class="badge rounded-pill alert-warning">Archived</span>
+                    }
+                    else if (item.IsDeleted)
+                    {
+                        <span class="badge rounded-pill alert-danger">Disabled</span>
+                    }
+                    else
+                    {
+                        <span class="badge rounded-pill alert-success">Active</span>
+                    }
+                </div>
+                <div class="col-lg-1 col-sm-2 col-4 col-date">
+                    <span>@item.CreatedDate</span>
+                </div>
+                <div class="col-lg-2 col-sm-2 col-4 col-action text-end action-buttons" id="actionbut">
+                    @if (!item.IsDeleted && !item.IsArchived)
+                    {
+                        <a href="/Seller/Product/Archived/@item.Id" class="btn btn-sm font-sm rounded btn-brand" style="background-color:orange">
+                            <i class="material-icons md-edit"></i> Archive
+                        </a>
+                    }
+
+                    @if (item.IsDeleted)
+                    {
+                        <a href="/Seller/Product/Update/@item.Id" class="btn btn-sm font-sm rounded btn-brand">
+                            <i class="material-icons md-edit"></i> Edit
+                        </a>
+                    }
+                    else if (!item.IsDeleted && item.IsArchived)
+                    {
+                        <a href="/Seller/Product/Update/@item.Id" class="btn btn-sm font-sm rounded btn-brand">
+                            <i class="material-icons md-edit"></i> Edit
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/Seller/Product/Update/@item.Id" class="btn btn-sm font-sm rounded btn-brand">
+                            <i class="material-icons md-edit"></i> Edit
+                        </a>
+                    }
+
+                    @if (item.IsDeleted)
+                    {
+                        <a href="/Seller/Product/RestoreProduct/@item.Id" class="btn btn-sm font-sm btn-light rounded" style="color:white ;background:orange">
+                            Restore
+                        </a>
+                    }
+                    else if (item.IsArchived)
+                    {
+                        <a href="/Seller/Product/RestoreArchiveProduct/@item.Id" class="btn btn-sm font-sm btn-light rounded" style="color:white ;background:orange">
+                            Restore
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/Seller/Product/DeleteProduct/@item.Id" class="btn btn-sm font-sm btn-light rounded">
+                            <i class="material-icons md-delete_forever"></i> Delete
+                        </a>
+                    }
+                    @if (item.IsDeleted)
+                    {
+                        <a href="/Seller/Product/DeleteFromData/@item.Id" class="btn btn-sm font-sm btn-light rounded remove-button" style=" color:white ;background-color: grey;">
+                            <i class="material-icons md-delete_forever"></i> Remove
+                        </a>
+                    }
+                    else if (item.IsArchived)
+                    {
+                        <a href="/Seller/DeleteFromData/@item.Id" class="btn btn-sm font-sm btn-light rounded remove-button" style=" color:white ;background-color: grey;">
+                            <i class="material-icons md-delete_forever"></i> Remove
+                        </a>
+                    }
+
+                    @if (item.Comments?.Count() > 0)
+                    {
+                        <a href="/Seller/Product/ProductComments/@item.Id" class="btn btn-sm font-sm rounded btn-brand">
+                            <i class="material-icons md-edit"></i> Edit Comments
+                        </a>
+                    }
+
+                </div>
+            </div>
+        </article>
+    }
+}
+
+@if (ViewBag.Message != null)
+{
+    <p style="text-align:center;font-size:20px;color:red">@ViewBag.Message</p>
+}
+
+
+<div class="pagination-area mt-30 mb-50">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start" id="prod-pag">
+            <li class="page-item @(Model.HasPrev ? "" : "disabled")">
+                <div class="page-link" onclick="handlePagination(@(Model.CurrentPage - 1), 4)" style="width:43px"><</div>
+            </li>
+            @for (int i = 1; i <= Model.LastPage; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <div class="page-link" onclick="handlePagination(@i, 4)" style="width:44px">0 @i</div>
+                </li>
+            }
+            <li class="page-item @(Model.LastPage > 1 && Model.HasNext ? "" : "disabled")">
+                <div class="page-link" onclick="handlePagination(@(Model.CurrentPage + 1), 4)" style="width:43px">></div>
+            </li>
+        </ul>
+    </nav>
+</div>

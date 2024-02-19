@@ -1070,13 +1070,53 @@
 	}
 }
 .product-color {
-	&-red {background:#ff596d;}
-	&-yellow{background:#ffdb33;}
-	&-white{background:#ffffff;}
-	&-orange{background:#ffbb51;}
-	&-cyan{background:#80e6ff;}
-	&-green{background:#38cf46;}
-	&-purple{background:#ff8ff8;}
+	&-red {
+		background: #ff596d;
+	}
+
+	&-yellow {
+		background: #ffdb33;
+	}
+
+	&-white {
+		background: #ffffff;
+	}
+
+	&-orange {
+		background: #ffbb51;
+	}
+
+	&-cyan {
+		background: #80e6ff;
+	}
+
+	&-green {
+		background: #38cf46;
+	}
+
+	&-purple {
+		background: #ff8ff8;
+	}
+
+	&-black {
+		background: #000000;
+	}
+
+	&-pink {
+		background: #FFC0CB;
+	}
+
+	&-brown {
+		background: #964B00;
+	}
+
+	&-blue {
+		background: #0000FF;
+	}
+
+	&-gray {
+		background: #6699CC;
+	}
 }
 .detail-gallery .slick-slider {
 	background-color: #000;

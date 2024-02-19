@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
+using ShoppingMvc.Models;
+using ShoppingMvc.Models.Identity;
+using ShoppingMvc.ViewModels.BasketVm;
 using ShoppingMvc.ViewModels.HomeVm;
 using ShoppingMvc.ViewModels.ProductVm;
 using ShoppingMvc.ViewModels.SliderVm;
@@ -9,12 +13,21 @@ namespace ShoppingMvc.Controllers
 {
     public class HomeController : Controller
     {
-        EvaraDbContext _db {  get; set; }
+        EvaraDbContext _db { get; set; }
 
         public HomeController(EvaraDbContext db)
         {
             _db = db;
         }
+
+        private async Task<AppUser> GetAuthenticatedUserAsync()
+         => await _db.Users
+            .Include(u => u.Baskets)
+            .ThenInclude(b => b.BasketItems)
+            .ThenInclude(b => b.Product)
+            .ThenInclude(p => p.ProductImages)
+            .FirstOrDefaultAsync(u => u.UserName == HttpContext.User.Identity.Name);
+
 
         public async Task<IActionResult> Index()
         {
@@ -35,9 +48,11 @@ namespace ShoppingMvc.Controllers
                 ProductListItems = await _db.Products
                     .Include(p => p.Category)
                     .Include(p => p.ProductImages)
+                    .Include(p => p.Tags)
                     .Where(p => !p.IsDeleted)
+                    .Where(p => !p.IsArchived)
                     .Select(p => p.FromProduct_ToProductListItemVm())
-                    .ToListAsync()
+                    .ToListAsync(),
             };
 
             return View(vm);
@@ -46,15 +61,10 @@ namespace ShoppingMvc.Controllers
 
         public IActionResult AccessDenied()
         {
-             return View();
+            return View();
         }
-        public string GetCookie(string key)
-        {
-            return HttpContext.Request.Cookies[key] ?? "";
-        }
-		public IActionResult GetBasket()
-		{
-			return ViewComponent("Basket");
-		}
-	}
+
+
+
+    }
 }

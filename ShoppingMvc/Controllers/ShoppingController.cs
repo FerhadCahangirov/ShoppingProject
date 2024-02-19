@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ShoppingMvc.Contexts;
@@ -17,6 +18,7 @@ namespace ShoppingMvc.Controllers
         {
             _db = db;
         }
+
         public async Task<IActionResult> Index()
         {
             int take = 4;
@@ -30,6 +32,7 @@ namespace ShoppingMvc.Controllers
             return View(vm);
 
         }
+
         public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)
         {
             var items = _db.Products.Where(p => !p.IsDeleted).Skip((page - 1) * count).Take(count).Select(p => p.FromProduct_ToProductListItemVm());
@@ -38,50 +41,5 @@ namespace ShoppingMvc.Controllers
 
             return PartialView("_ShopProductPartial", pag);
         }
-
-        public async Task<IActionResult> AddBasket(int? id)
-        {
-            if (id == null || id <= 0) return BadRequest();
-            if (!await _db.Products.AnyAsync(p => p.Id == id)) return NotFound();
-            var basket = JsonConvert.DeserializeObject<List<BasketProductandCountVm>>(HttpContext.Request.Cookies["basket"] ?? "[]");
-            var existItem = basket.Find(p => p.Id == id);
-            if (existItem == null)
-            {
-                basket.Add(new BasketProductandCountVm
-                {
-                    Id = (int)id,
-                    Count = 1
-
-                });
-            }
-            else
-            {
-                existItem.Count++;
-            }
-            HttpContext.Response.Cookies.Append("basket", JsonConvert.SerializeObject(basket));
-            return Ok();
-        }
-        public async Task<IActionResult> RemoveBasket(int? id)
-        {
-            if (id == null || id <= 0) return BadRequest();
-            if (!await _db.Products.AnyAsync(p => p.Id == id)) return NotFound();
-            var dasket = JsonConvert.DeserializeObject<List<BasketProductandCountVm>>(HttpContext.Request.Cookies["basket"] ?? "[]");
-            var existItem = dasket.Find(b => b.Id == id);
-            if (existItem.Count == 1)
-            {
-                dasket.Remove(new BasketProductandCountVm()
-                {
-                    Id = (int)id,
-                    Count = 1
-                });
-            }
-            else
-            {
-                existItem.Count--;
-            }
-            HttpContext.Response.Cookies.Append("basket", JsonConvert.SerializeObject(dasket));
-            return Ok();
-        }
-
     }
 }

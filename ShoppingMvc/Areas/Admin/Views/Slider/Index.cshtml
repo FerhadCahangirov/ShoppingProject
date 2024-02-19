@@ -4,89 +4,6 @@
 } 
 
 @section scripts{
-    <script>
-        $(document).ready(function () {
-            $('.item-checkbox').change(function () {
-                var isChecked = $(this).is(':checked');
-                var actionButtons = $(this).closest('.row').find('.action-buttons');
-
-                // Change background color when checkbox is selected
-                if (isChecked) {
-                    $(this).closest('.row').css('background-color', '#ccf0d1');
-                } else {
-                    $(this).closest('.row').css('background-color', ''); // Remove background color
-                }
-
-                // Show/hide action buttons based on checkbox selection
-                actionButtons.toggle(!isChecked);
-
-                // Show/hide Delete Selected button based on checkbox selection
-                $('#deleteSelectedButton').toggle($('.item-checkbox:checked').length > 0);
-            });
-            $("#applyFilterButton").click(function () {
-                applyFilters();
-            });
-            $('#deleteSelectedButton').click(function () {
-                deleteSelected();
-            });
-            function deleteSelected() {
-                var selectedItems = $('.item-checkbox:checked');
-                if (selectedItems.length > 0) {
-                    var confirmDelete = confirm('Are you sure you want to delete the selected item(s)?');
-                    if (confirmDelete) {
-                        // Perform deletion logic here, e.g., redirect to a delete action
-                        selectedItems.each(function () {
-                            var itemId = $(this).data('id'); // Assuming you have a data-id attribute on the checkbox
-                            window.location.href = "/Slider/DeleteFromData?id=" + itemId;
-                        });
-                    }
-                } else {
-                    alert('Please select at least one item to delete.');
-                }
-            }
-            $("body").on("click", "#prod-pag a.page-link", function (ev) {
-                ev.preventDefault(); // Prevent the default behavior of anchor tags
-                fetch($(this).attr("href"))
-                    .then(res => res.text())
-                    .then((data) => $("#hellobody").html(data));
-            });
-        });
-
-        function applyFilters() {
-            var categoryFilter = $("#categoryFilter").val();
-            var dateFilter = $("#dateFilter").val();
-            var statusFilter = $("#statusFilter").val();
-           
-            // Use AJAX to send filter values to the server
-            $.ajax({
-                url: '@Url.Action("Index", "Slider")',
-                type: 'GET',
-                data: {
-                    categoryFilter: categoryFilter,
-                    dateFilter: dateFilter,
-                    statusFilter: statusFilter
-                },
-                success: function (data) {
-
-                   // document.getElementById('xaxa').innerHTML = data;
-                    document.querySelector('.hello').innerHTML = data;
-                },
-                error: function () {
-                    // Handle errors if needed
-                    console.log('Error applying filters');
-                }
-            });
-
-        }
-        function selectAllCheckboxes() {
-            var headerCheckbox = document.getElementById("selectAllCheckbox");
-            var checkboxes = document.querySelectorAll(".card-body input[type='checkbox']");
-
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = headerCheckbox.checked;
-            });
-        }
-    </script>
     @if (TempData["Create"] != null)
     {
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -169,7 +86,7 @@
             </script>
         }
     }
-    
+        
 }
 <section class="content-main" id="salam">
     <div class="content-header">
@@ -177,50 +94,13 @@
             <h2 class="content-title card-title">Slider List</h2>
         </div>
         <div>
-            <a asp-action="Create" class="btn btn-primary btn-sm rounded">Create new</a>
+            <a href="/Admin/Slider/Create" class="btn btn-primary btn-sm rounded">Create new</a>
         </div>
     </div>
     <div class="card mb-4">
-        <header class="card-header">
-            <div class="row align-items-center">
-                <div class="col col-check flex-grow-0">
-                    <div class="form-check ms-2">
-                        <input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox" onclick="selectAllCheckboxes()">
 
-                    </div>
-                </div>
-                <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                    <select class="form-select" id="categoryFilter">
-                        
-                        <option>All categories</option>
-                        <option>Electronics</option>
-                        <option>Clothes</option>
-                        <option>Automobile</option>
-                    </select>
-                </div>
-                <div class="col-md-2 col-6">
-                    <input type="date" id="dateFilter" class="form-control">
-                </div>
-                <div class="col-md-2 col-6">
-                    <select  class="form-select" id="statusFilter">
-                        
-                        <option>All statuses</option>
-                        <option>Active</option>
-                        <option>Disabled</option>
-                        <option>Show all</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-2 col-12">
-                    <button id="applyFilterButton" class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
-                </div>
-
-            </div>
-        </header> <!-- card-header end// -->
-
-
-        <div class="card-body" class="hello" id="hellobody">
-            <partial model="Model" name="ProductPagination" />
+        <div class="card-body" class="hello" id="sliderbody">
+            <partial model="Model" name="SliderPagination" />
         </div> <!-- card-body end// -->
     </div> <!-- card end// -->
    

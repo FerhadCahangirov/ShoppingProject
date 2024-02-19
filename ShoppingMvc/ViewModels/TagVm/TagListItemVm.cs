@@ -26,6 +26,6 @@ namespace ShoppingMvc.ViewModels.TagVm
 		public DateTime? CreatedTime { get; set; }
 		public DateTime? UpdatedTime { get; set; }
 		public bool IsArchived { get; set; }
-        public IEnumerable<ProductTag>? TagProduct { get; set; }
+        public IEnumerable<Tag>? Tags { get; set; }
 	}
 }

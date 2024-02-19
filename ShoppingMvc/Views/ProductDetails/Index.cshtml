@@ -1,4 +1,112 @@
 ﻿@model ShoppingMvc.ViewModels.ProductDetailVm.ProductDetailVm
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var currentRating = 0;
+        var ratingDivContainer = document.getElementById("product-rating-container");
+        var ratingDiv = document.getElementById("product-rating");
+
+        function updateRatingDisplay() {
+            ratingDiv.style.width = currentRating + "%";
+        }
+
+        ratingDivContainer.addEventListener("mousemove", function (event) {
+            var rect = ratingDivContainer.getBoundingClientRect();
+            var offsetX = event.clientX - rect.left;
+            var percentage = (offsetX / rect.width) * 100;
+            currentRating = Math.round(percentage);
+            updateRatingDisplay();
+        });
+
+        ratingDivContainer.addEventListener("click", function () {
+            document.getElementById("Rating").value = currentRating;
+        });
+    });
+
+    function handleAddComment(productId) {
+        var commentMessage = document.getElementById("commentMessage").value;
+        var currentRating = parseFloat(document.getElementById("Rating").value);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ProductDetails/AddComment',
+            data: {
+                productId: productId,
+                message: commentMessage,
+                rating: currentRating
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Comment has been added",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    position: "top-center",
+                    icon: "error",
+                    title: "Comment Couldn't be sent",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+    }
+
+    function handleAddReplyComment(commentId, productId) {
+        var replyCommentMessage = document.getElementById(`replyCommentMessage${commentId}`).value;
+        var reviewsContainer = document.getElementById("NavTabsForScroll");
+
+        $.ajax({
+            type: 'POST',
+            url: '/ProductDetails/AddReply',
+            data: {
+                commentId: commentId,
+                message: replyCommentMessage,
+                productId: productId,
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Comment has been added",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                window.location.reload();
+
+                reviewsContainer.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                })
+            },
+            error: function (xhr, status, error) {
+                console.log(error)
+                Swal.fire({
+                    position: "top-center",
+                    icon: "error",
+                    title: "Comment Couldn't be sent",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+    }
+</script>
+
+<script>
+    function showReplyModal(commentId) {
+        $('#parentCommentId').val(commentId);
+        $(`#replyModal${commentId}`).modal('show');
+    }
+    function closeReplyModal(commentId) {
+        $('#parentCommentId').val(commentId);
+        $(`#replyModal${commentId}`).modal('hide');
+
+    }
+
+</script>
 
 <main class="main">
     <div class="page-header breadcrumb-wrap">
@@ -23,9 +131,9 @@
                                     <div class="product-image-slider">
                                         @{
                                             foreach (var image in Model.Product.ProductImages)
-                                            {
-                                                <figure class="border-radius-10">
-                                                    <img src="@image.ImageUrl" alt="@image.ImageName">
+                                            { 
+                                                <figure class="border-radius-10" style="height: 330px">
+                                                    <img style="width: 100%; height: 100%" src="/@image.ImageUrl" alt="@image.ImageName">
                                                 </figure>
                                             }
                                         }
@@ -35,7 +143,7 @@
                                         @{
                                             foreach (var image in Model.Product.ProductImages)
                                             {
-                                                <div><img src="@image.ImageUrl" alt="@image.ImageName"></div>
+                                                <div><img width="140" height="90" src="/@image.ImageUrl" alt="@image.ImageName"></div>
 
                                             }
                                         }
@@ -61,10 +169,10 @@
                                         </div>
                                         <div class="product-rate-cover text-end">
                                             <div class="product-rate d-inline-block">
-                                                <div class="product-rating" style="width:90%">
+                                                <div class="product-rating" style="width:@Model.TotalRatingPercentage%">
                                                 </div>
                                             </div>
-                                            <span class="font-small ml-5 text-muted"> (@Model.Comments.Count())</span>
+                                            <span class="font-small ml-5 text-muted"> (@Model.Comments.Count)</span>
                                         </div>
                                     </div>
                                     <div class="clearfix product-price-cover">
@@ -90,24 +198,15 @@
                                     <div class="attr-detail attr-color mb-15">
                                         <strong class="mr-10">Color</strong>
                                         <ul class="list-filter color-filter">
-                                            <li><a href="#" data-color="Red"><span class="product-color-red"></span></a></li>
-                                            <li><a href="#" data-color="Yellow"><span class="product-color-yellow"></span></a></li>
-                                            <li class="active"><a href="#" data-color="White"><span class="product-color-white"></span></a></li>
-                                            <li><a href="#" data-color="Orange"><span class="product-color-orange"></span></a></li>
-                                            <li><a href="#" data-color="Cyan"><span class="product-color-cyan"></span></a></li>
-                                            <li><a href="#" data-color="Green"><span class="product-color-green"></span></a></li>
-                                            <li><a href="#" data-color="Purple"><span class="product-color-purple"></span></a></li>
+                                            @if (string.IsNullOrEmpty(Model.Product.Color) == false)
+                                            {
+                                                @foreach (string color in Model.Product.Color.Split(' '))
+                                                {
+                                                    <li><a href="#" data-color="@color.ToUpper()"><span class="product-color-@(color.ToLower())"></span></a></li>
+                                                }
+                                            }
                                         </ul>
-                                    </div>
-                                    <div class="attr-detail attr-size">
-                                        <strong class="mr-10">Size</strong>
-                                        <ul class="list-filter size-filter font-small">
-                                            <li><a href="#">S</a></li>
-                                            <li class="active"><a href="#">M</a></li>
-                                            <li><a href="#">L</a></li>
-                                            <li><a href="#">XL</a></li>
-                                            <li><a href="#">XXL</a></li>
-                                        </ul>
+
                                     </div>
                                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                     <div class="detail-extralink">
@@ -119,19 +218,24 @@
                                         <div class="product-extra-link2">
                                             <button type="submit" class="button button-add-to-cart">Add to cart</button>
                                             <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                            <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
                                         </div>
                                     </div>
                                     <ul class="product-meta font-xs color-grey mt-50">
                                         <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
-                                        <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li>
-                                        <li>Availability:<span class="in-stock text-success ml-5">8 Items In Stock</span></li>
+                                        <li class="mb-5">
+                                            Tags:
+                                            @foreach (var tag in @Model.Product.Tags)
+                                            {
+                                                <a href="#" rel="tag">@tag</a>
+                                            }
+                                        </li>
+                                        <li>Availability:<span class="in-stock text-success ml-5">@Model.Product.StockNumber Items In Stock</span></li>
                                     </ul>
                                 </div>
                                 <!-- Detail Info -->
                             </div>
                         </div>
-                        <div class="tab-style3">
+                        <div class="tab-style3" id="NavTabsForScroll">
                             <ul class="nav nav-tabs text-uppercase">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="Description-tab" data-bs-toggle="tab" href="#Description">Description</a>
@@ -140,44 +244,14 @@
                                     <a class="nav-link" id="Additional-info-tab" data-bs-toggle="tab" href="#Additional-info">Additional info</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="Reviews-tab" data-bs-toggle="tab" href="#Reviews">Reviews (3)</a>
+                                    <a class="nav-link" id="Reviews-tab" data-bs-toggle="tab" href="#Reviews">Reviews (@Model.TotalCommentsCount)</a>
                                 </li>
                             </ul>
                             <div class="tab-content shop_info_tab entry-main-content">
                                 <div class="tab-pane fade show active" id="Description">
-                                    <div class="">
-                                        <p>
-                                            Uninhibited carnally hired played in whimpered dear gorilla koala depending and much yikes off far quetzal goodness and from for grimaced goodness unaccountably and meadowlark near unblushingly crucial scallop
-                                            tightly neurotic hungrily some and dear furiously this apart.
-                                        </p>
-                                        <p>
-                                            Spluttered narrowly yikes left moth in yikes bowed this that grizzly much hello on spoon-fed that alas rethought much decently richly and wow against the frequent fluidly at formidable acceptably flapped
-                                            besides and much circa far over the bucolically hey precarious goldfinch mastodon goodness gnashed a jellyfish and one however because.
-                                        </p>
-                                        <ul class="product-more-infor mt-30">
-                                            <li><span>Type Of Packing</span> Bottle</li>
-                                            <li><span>Color</span> Green, Pink, Powder Blue, Purple</li>
-                                            <li><span>Quantity Per Case</span> 100ml</li>
-                                            <li><span>Ethyl Alcohol</span> 70%</li>
-                                            <li><span>Piece In One</span> Carton</li>
-                                        </ul>
-                                        <hr class="wp-block-separator is-style-dots">
-                                        <p>
-                                            Laconic overheard dear woodchuck wow this outrageously taut beaver hey hello far meadowlark imitatively egregiously hugged that yikes minimally unanimous pouted flirtatiously as beaver beheld above forward
-                                            energetic across this jeepers beneficently cockily less a the raucously that magic upheld far so the this where crud then below after jeez enchanting drunkenly more much wow callously irrespective limpet.
-                                        </p>
-                                        <h4 class="mt-30">Packaging & Delivery</h4>
-                                        <hr class="wp-block-separator is-style-wide">
-                                        <p>
-                                            Less lion goodness that euphemistically robin expeditiously bluebird smugly scratched far while thus cackled sheepishly rigid after due one assenting regarding censorious while occasional or this more crane
-                                            went more as this less much amid overhung anathematic because much held one exuberantly sheep goodness so where rat wry well concomitantly.
-                                        </p>
-                                        <p>
-                                            Scallop or far crud plain remarkably far by thus far iguana lewd precociously and and less rattlesnake contrary caustic wow this near alas and next and pled the yikes articulate about as less cackled dalmatian
-                                            in much less well jeering for the thanks blindly sentimental whimpered less across objectively fanciful grimaced wildly some wow and rose jeepers outgrew lugubrious luridly irrationally attractively
-                                            dachshund.
-                                        </p>
-                                    </div>
+                                    <p>
+                                        @Model.Product.Description
+                                    </p>
                                 </div>
                                 <div class="tab-pane fade" id="Additional-info">
                                     <table class="font-md">
@@ -283,18 +357,84 @@
                                                         <div class="single-comment justify-content-between d-flex">
                                                             <div class="user justify-content-between d-flex">
                                                                 <div class="thumb text-center">
-                                                                    <!-- Display user avatar and other user info -->
+                                                                    <img src="@(string.IsNullOrEmpty(comment.User?.ProfileImageUrl) ? "/Assets/assets/imgs/people/avatar1.jpg" : $"/{comment.User.ProfileImageUrl}")" alt="" style="width: 70px; height: 70px">
+                                                                    <h6><a href="#">@comment.User.UserName</a></h6>
+                                                                    <p class="font-xxs">Since 2012</p>
                                                                 </div>
                                                                 <div class="desc">
-                                                                    <!-- Display comment message, rating, date, etc. -->
+                                                                    <div class="product-rate d-inline-block">
+                                                                        <div class="product-rating" style="width:@comment.Rating%">
+                                                                        </div>
+                                                                    </div>
                                                                     <p>@comment.Message</p>
                                                                     <div class="d-flex justify-content-between">
                                                                         <div class="d-flex align-items-center">
-                                                                            <p class="font-xs mr-30">@comment.CreatedTime.ToString("MMMM d, yyyy")</p>
-                                                                            <a class="text-brand btn-reply">Reply <i class="fi-rs-arrow-right"></i></a>
+                                                                            <p class="font-xs mr-30">@comment.CreatedTime.ToString("MMMM d, 'at' h:mm tt");</p>
+
+                                                                            <span style="cursor: pointer;" class="text-brand btn-reply" onclick="showReplyModal(@comment.Id)">Reply <i class="fi-rs-arrow-right"></i></span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                            </div>
+                                                        </div>
+
+                                                        @foreach (var reply in comment.Replies)
+                                                        {
+                                                            <div class="single-comment justify-content-between d-flex" style="margin-left: 50px">
+                                                                <div class="user justify-content-between d-flex">
+                                                                    <div class="thumb text-center">
+                                                                        <img src="@(string.IsNullOrEmpty(reply.User?.ProfileImageUrl) ? "/Assets/assets/imgs/people/avatar1.jpg" : $"/{reply.User.ProfileImageUrl}")" alt="" style="width: 70px; height: 70px">
+                                                                        <h6><a href="#">@reply.User.UserName</a></h6>
+                                                                        <p class="font-xxs">Since 2012</p>
+                                                                    </div>
+                                                                    <div class="desc">
+                                                                        <p>@reply.Message</p>
+                                                                        <div class="d-flex justify-content-between">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="font-xs mr-30">@reply.CreatedTime.ToString("MMMM d, 'at' h:mm tt");</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+
+                                                        <div class="modal fade" id="replyModal@(comment.Id)" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                @if (Model.IsAuthenticatedUserExists)
+                                                                {
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="replyModalLabel">Reply to Comment</h5>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeReplyModal(@comment.Id)">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div asp-action="AddReplyComment">
+                                                                                <input type="hidden" id="parentCommentId" name="parentCommentId" value="0" />
+                                                                                <div class="form-group">
+                                                                                    <label for="message" class="col-form-label">Message:</label>
+                                                                                    <textarea class="form-control" id="replyCommentMessage@(comment.Id)" name="message" rows="3"></textarea>
+                                                                                </div>
+                                                                                <button type="button" class="btn btn-primary" onclick="handleAddReplyComment(@comment.Id, @Model.Product.Id)">Submit</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h4 class="mt-30">Ooops! You Are Not Authenticated.</h4>
+                                                                        </div>
+
+                                                                        <div class="modal-body">
+                                                                            <button class="btn btn-primary">Sign Up</button>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+
                                                             </div>
                                                         </div>
                                                     }
@@ -308,15 +448,26 @@
                                         </div>
                                     </div>
                                     <!--comment form-->
-                                    <div class="comment-form">
-                                        <h4 class="mb-15">Add a review</h4>
-                                        <!-- Comment submission form -->
-                                        <form id="commentForm" asp-action="AddComment" asp-controller="ProductDetails" method="post">
-                                            <input asp-for="Comment.UserName" type="text" placeholder="Your name" required>
-                                            <textarea asp-for="Comment.Message" placeholder="Your review" required></textarea>
-                                            <button type="submit">Submit</button>
-                                        </form>
-                                    </div>
+                                    @if (Model.IsAuthenticatedUserExists)
+                                    {
+                                        <div class="comment-form">
+                                            <h4 class="mb-15">Add a review</h4>
+                                            <!-- Comment submission form -->
+                                            <div id="commentForm">
+                                                <div class="product-rate mb-30" id="product-rating-container">
+                                                    <div id="product-rating" class="product-rating" style="width:90%"></div>
+                                                </div>
+                                                <textarea id="commentMessage" name="Comment.Message" placeholder="Your review" required></textarea>
+                                                <!-- Hidden field to store mapped rating -->
+                                                <input type="hidden" id="Rating" name="Rating" value="0">
+                                                <button type="button" id="submitBtn" onclick="handleAddComment(@Model.Product.Id)">Submit</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="mt-30">Ooops! You Are Not Authenticated.</h4>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -470,13 +621,10 @@
                     <div class="widget-category mb-30">
                         <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
                         <ul class="categories">
-                            <li><a href="shop-grid-right.html">Shoes & Bags</a></li>
-                            <li><a href="shop-grid-right.html">Blouses & Shirts</a></li>
-                            <li><a href="shop-grid-right.html">Dresses</a></li>
-                            <li><a href="shop-grid-right.html">Swimwear</a></li>
-                            <li><a href="shop-grid-right.html">Beauty</a></li>
-                            <li><a href="shop-grid-right.html">Jewelry & Watch</a></li>
-                            <li><a href="shop-grid-right.html">Accessories</a></li>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <li><a href="shop-grid-right.html">@category.Name</a></li>
+                            }
                         </ul>
                     </div>
                     <!-- Fillter By Price -->

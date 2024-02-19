@@ -1,4 +1,4 @@
-﻿using ShoppingMvc.Helpers.Exceptions;
+﻿using ShoppingMvc.Exceptions;
 using System.Collections;
 
 namespace ShoppingMvc.ViewModels.CommonVm

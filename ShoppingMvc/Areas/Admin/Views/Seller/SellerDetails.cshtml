@@ -1,0 +1,219 @@
+﻿@model SellerListItemVm
+
+@{
+    ViewData["Title"] = "SellerDetails";
+}
+
+
+@section scripts{
+    <script>
+        function applyFilters(sellerId) {
+            var dateFilter = $("#dateFilter").val();
+            var statusFilter = $("#statusFilter").val();
+
+            // Use AJAX to send filter values to the server
+            $.ajax({
+                url: `/Admin/Seller/SellerDetails/${sellerId}`,
+                type: 'GET',
+                data: {
+                    dateFilter: dateFilter,
+                    statusFilter: statusFilter
+                },
+                success: function (data) {
+
+                    document.querySelector('#sellerBody').innerHTML = data;
+                },
+                error: function () {
+                    // Handle errors if needed
+                    console.log('Error applying filters');
+                }
+            });
+
+        }
+    </script>
+    @if (TempData["Create"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @if ((bool)TempData["Create"] == true)
+        {
+            <script>
+                Swal.fire({
+                    position: "top-center",
+                    icon: "success",
+                    title: "Data Created",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                Swal.fire({
+                    position: "top-center",
+                    icon: "error",
+                    title: "Something went wrong",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        }
+    }
+    @if (TempData["Delete"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        @if ((bool)TempData["Delete"] == true)
+        {
+            <script>
+                // Display success message if the deletion was successful
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                // Display error message if something went wrong
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            </script>
+        }
+    }
+    @if (TempData["Update"] != null)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        @if ((bool)TempData["Update"] == true)
+        {
+            <script>
+                Swal.fire({
+                    title: "Data Updated",
+                    text: "Your file has been Updated",
+                    icon: "success"
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            </script>
+        }
+    }
+
+}
+<script>
+    function handleApproveSeller(id) {
+        $.ajax({
+            type: 'POST',
+            url: `/Admin/Seller/ApproveSeller/${id}`,
+            success: function (response) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Primary Image Changed",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    position: "top-center",
+                    icon: "error",
+                    title: "Primary Image Could Not Changed",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+    }
+</script>
+
+<section class="content-main">
+    <div class="content-header">
+        <a href="javascript:history.back()"><i class="material-icons md-arrow_back"></i> Go back </a>
+    </div>
+    <div class="card mb-4">
+        @if (!string.IsNullOrEmpty(Model.SellerData.ThumbnailImageUrl))
+        {
+            <div class="card-header" style="height:150px;position:relative">
+                <img src="\@Model.SellerData.ThumbnailImageUrl" class="center-xy" alt="Logo Brand" style="width: 100%; max-height: 150px; object-fit: cover;">
+            </div>
+        }
+        else
+        {
+            <div class="card-header bg-primary" style="height:150px;">
+            </div>
+        }
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl col-lg flex-grow-0" style="flex-basis:230px">
+                    <div class="img-thumbnail shadow w-100 bg-white position-relative text-center" style="height:190px; width:200px; margin-top:-120px ">
+                        <img src="\@Model.SellerData.ShopLogoUrl" class="center-xy img-fluid" alt="Logo Brand">
+                    </div>
+                </div> <!--  col.// -->
+                <div class="col-xl col-lg">
+                    <h3>@Model.SellerData.ShopName</h3>
+                    <p>@Model.SellerData.ShopStreet @Model.SellerData.ShopState, @Model.SellerData.ShopCity @Model.SellerData.ShopPostalCode</p>
+                </div> <!--  col.// -->
+
+
+                <div class="col-xl-4 text-md-end">
+                    @if (Model.SellerData.IsApproved != true)
+                    {
+                        <a onclick="handleApproveSeller(@Model.SellerData.Id)" class="btn btn-primary">Approve Seller <i class="material-icons md-launch"></i> </a>
+                    }
+                </div> <!--  col.// -->
+            </div> <!-- card-body.// -->
+            <hr class="my-4">
+            <div class="row g-4">
+                <div class="col-md-12 col-lg-4 col-xl-2">
+                    <article class="box">
+                        <p class="mb-0 text-muted">Total sales:</p>
+                        <h5 class="text-success">238</h5>
+                        <p class="mb-0 text-muted">Revenue:</p>
+                        <h5 class="text-success mb-0">$2380</h5>
+                    </article>
+                </div> <!--  col.// -->
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Contacts</h6>
+                    <p>
+                        Manager: @Model.User.Name @Model.User.Surname <br>
+                        @Model.User.Email <br>
+                        @Model.User.PhoneNumber
+                    </p>
+                </div> <!--  col.// -->
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Address</h6>
+                    <p>
+                        Country: @Model.SellerData.ShopCountry <br>
+                        Address: @Model.SellerData.ShopStreet @Model.SellerData.ShopState<br>
+                        Postal code: @Model.SellerData.ShopPostalCode
+                    </p>
+                </div> <!--  col.// -->
+                <div class="col-sm-6 col-xl-4 text-xl-end">
+                    <div class="mapbox position-relative d-inline-block">
+                        <img src="/Assets/assets/imgs/misc/map.jpg" class="rounded2" height="120" alt="map">
+                        <span class="map-pin" style="top:50px; left: 100px"></span>
+                        <button class="btn btn-sm btn-brand position-absolute bottom-0 end-0 mb-15 mr-15 font-xs"> Large </button>
+                    </div>
+                </div> <!--  col.// -->
+            </div> <!--  row.// -->
+        </div> <!--  card-body.// -->
+    </div> <!--  card.// -->
+    <div id="paginationBody">
+        <partial model="Model" name="SellerProductsPagination" />
+    </div>
+</section>
