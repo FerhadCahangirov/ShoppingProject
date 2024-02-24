@@ -60,7 +60,7 @@
             var contentFilter = $("#contentFilter").val();
 
             $.ajax({
-                url: `/Seller/Product/ProductCommentsPagination/${productId}`,
+                url: `/Seller/Product/ProductCommentsPartial/${productId}`,
                 type: 'POST',
                 data: {
                     dateFilter: dateFilter,
@@ -203,7 +203,7 @@
 
 
         <div class="card-body" id="productcommentsbody">
-            <partial model="Model" name="ProductCommentsPagination" />
+            <partial model="Model" name="ProductCommentsPartial" />
         </div> <!-- card-body end// -->
     </div> <!-- card end// -->
 

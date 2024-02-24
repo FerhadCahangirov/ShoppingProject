@@ -29,7 +29,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
         private async Task<SellerData> GetActiveSellerDataAsync() => await _db.SellerDatas.Include(s => s.Seller).FirstOrDefaultAsync(x => x.Seller.UserName == HttpContext.User.Identity.Name);
 
-        public async Task<IActionResult> ProductPagination(string? searchFilter, string? categoryFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 8)
+        public async Task<IActionResult> ProductsPartial(string? searchFilter, string? categoryFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
         {
             int take = size;
             int skip = (page - 1) * take;
@@ -48,7 +48,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             if (!string.IsNullOrEmpty(categoryFilter))
             {
                 categoryFilter = categoryFilter.ToLower();
-                if (categoryFilter != "show all")
+                if (categoryFilter != "show all" && _db.Categories.Any(c => c.Name.ToLower() == categoryFilter))
                     baseQuery = baseQuery.Where(p => p.Category.Name.ToLower() == categoryFilter);
             }
 
@@ -90,24 +90,24 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = productViewModels.Skip(skip).Take(take).ToList();
 
-            PaginationVm<IEnumerable<ProductListItemVm>> pagination = new PaginationVm<IEnumerable<ProductListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / take), paginatedData);
+            PaginationVm<IEnumerable<ProductListItemVm>> pagination = new PaginationVm<IEnumerable<ProductListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / take), paginatedData, size);
 
             if (paginatedData.Count == 0)
             {
                 ViewBag.Message = "Nothing Found";
             }
 
-            return PartialView("ProductPagination", pagination);
+            return PartialView("ProductsPartial", pagination);
         }
 
 
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index()
         {
             SellerData? sellerData = await GetActiveSellerDataAsync();
 
-
             @ViewBag.Categories = new SelectList(_db.Categories, "Id", "Name");
 
+            int page = 1;
             int take = 4;
             int skip = (page - 1) * take;
 
@@ -134,7 +134,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = productViewModels.Skip(skip).Take(take).ToList();
 
-            PaginationVm<IEnumerable<ProductListItemVm>> pagination = new PaginationVm<IEnumerable<ProductListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / take), paginatedData);
+            PaginationVm<IEnumerable<ProductListItemVm>> pagination = new PaginationVm<IEnumerable<ProductListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / take), paginatedData, take);
 
             if (paginatedData.Count == 0)
             {
@@ -176,7 +176,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
         }
 
-        public async Task<IActionResult> Cancel()
+        public IActionResult Cancel()
         {
             return Redirect("/Seller/Product/Index");
         }
@@ -319,7 +319,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             if (product == null) return NotFound();
 
-            List<ProductImage>? productImages = product.ProductImages;
+            List<ProductImage>? productImages = product.ProductImages?.ToList();
 
             ProductImage? productImage = productImages?.FirstOrDefault(pi => pi.Id == ImageId);
 
@@ -348,7 +348,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             if (product == null) return NotFound();
 
-            List<ProductImage>? productImages = product.ProductImages;
+            List<ProductImage>? productImages = product.ProductImages?.ToList();
 
             ProductImage? productImage = productImages?.FirstOrDefault(pi => pi.Id == ImageId);
 
@@ -485,7 +485,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
         }
 
         [HttpPost]
-        public IActionResult ProductCommentsPagination([FromRoute] int id, string? userFilter, string? contentFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
+        public IActionResult ProductCommentsPartial([FromRoute] int id, string? userFilter, string? contentFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
         {
             ViewBag.UserSearch = userFilter;
             ViewBag.ContentSearch = contentFilter;
@@ -496,6 +496,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .Include(c => c.User)
                 .Include(c => c.Product)
                 .Include(c => c.Replies)
+                .ThenInclude(r => r.User)
                 .Where(c => c.Product.Id == id)
                 .Select(c => new CommentRepliesVm()
                 {
@@ -513,14 +514,14 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
                 foreach (CommentRepliesVm q in queryList)
                 {
-                    if (q.Replies != null)
+                    if (q.Replies != null && q.Replies.Count > 0)
                     {
                         newQuery.Add(new CommentRepliesVm()
                         {
                             Comment = q.Comment,
                             Replies = q.Replies.Where(r =>
-                                r.User?.UserName.ToLower().Contains(userFilter) == true ||
-                                r.User?.Email.ToLower().Contains(userFilter) == true
+                                r.User.UserName.ToLower().Contains(userFilter) == true ||
+                                r.User.Email.ToLower().Contains(userFilter) == true
                             ).ToList(),
                         });
                     }
@@ -531,6 +532,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                             Comment = q.Comment,
                             Replies = null
                         });
+
                     }
                 }
 
@@ -555,7 +557,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
                 foreach (CommentRepliesVm q in queryList)
                 {
-                    if (q.Replies != null)
+                    if (q.Replies != null && q.Replies.Count > 0)
                     {
                         newQuery.Add(new CommentRepliesVm()
                         {
@@ -572,6 +574,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                             Comment = q.Comment,
                             Replies = null
                         });
+
                     }
                 }
 
@@ -594,7 +597,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
                 foreach (CommentRepliesVm q in queryList)
                 {
-                    if (q.Replies != null)
+                    if (q.Replies != null && q.Replies.Count > 0)
                     {
                         newQuery.Add(new CommentRepliesVm()
                         {
@@ -611,6 +614,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                             Comment = q.Comment,
                             Replies = null
                         });
+
                     }
                 }
 
@@ -633,7 +637,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
                     foreach (CommentRepliesVm q in queryList)
                     {
-                        if (q.Replies != null)
+                        if (q.Replies != null && q.Replies.Count > 0)
                         {
                             newQuery.Add(new CommentRepliesVm()
                             {
@@ -672,9 +676,9 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             int total = query.Count();
 
-            PaginationVm<IEnumerable<CommentRepliesVm>> pagination = new(total, page, (int)Math.Ceiling((decimal)total / size), data);
+            PaginationVm<IEnumerable<CommentRepliesVm>> pagination = new(total, page, (int)Math.Ceiling((decimal)total / size), data, size);
 
-            return PartialView("ProductCommentsPagination", pagination);
+            return PartialView("ProductCommentsPartial", pagination);
         }
 
 
@@ -687,6 +691,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .Include(c => c.User)
                 .Include(c => c.Product)
                 .Include(c => c.Replies)
+                .ThenInclude(r => r.User)
                 .Skip((page - 1) * size).Take(size)
                 .Where(c => c.Product.Id == id)
                 .Select(c => new CommentRepliesVm()
@@ -698,7 +703,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             int total = _db.Comments.Where(c => c.Product.Id == id).Count();
 
-            PaginationVm<IEnumerable<CommentRepliesVm>> pagination = new(total, page, (int)Math.Ceiling((decimal)total / size), comments);
+            PaginationVm<IEnumerable<CommentRepliesVm>> pagination = new(total, page, (int)Math.Ceiling((decimal)total / size), comments, size);
 
             return View(pagination);
         }
@@ -856,7 +861,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             if (data == null) return NotFound();
             TempData["Delete"] = true;
 
-            List<ProductImage>? productImages = data.ProductImages;
+            List<ProductImage>? productImages = data.ProductImages?.ToList();
 
             if (productImages?.Count > 0)
             {

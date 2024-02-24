@@ -20,6 +20,12 @@ namespace ShoppingMvc.Models
                 }
             }
         }
+
         public IEnumerable<Product>? Products { get; set; }
+
+        public Tag()
+        {
+            Products = new List<Product>();
+        }
     }
 }

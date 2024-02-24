@@ -30,7 +30,6 @@ namespace ShoppingMvc.Controllers
                 ProductListItems = await _db.Products.Select(p => p.FromProduct_ToProductListItemVm()).ToListAsync(),
             };
             return View(vm);
-
         }
 
         public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)

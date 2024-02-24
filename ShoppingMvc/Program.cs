@@ -144,9 +144,9 @@ namespace ShoppingMvc
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
 
-                endpoints.MapControllerRoute(name: "Seller", pattern: "{area:exists=Seller}/{controller=Product}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(name: "areaRoute", pattern: "{area:exists=Seller}/{controller=Dashboard}/{action=Index}/{id?}");
 
-                endpoints.MapControllerRoute(name: "Admin", pattern: "{area:exists=Admin}/{controller=Slider}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(name: "areaRoute", pattern: "{area:exists=Admin}/{controller=Slider}/{action=Index}/{id?}");
             });
 
 

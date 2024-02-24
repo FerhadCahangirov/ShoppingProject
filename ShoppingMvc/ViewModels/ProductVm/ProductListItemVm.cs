@@ -6,13 +6,13 @@ namespace ShoppingMvc.ViewModels.ProductVm
     public class ProductListItemVm
     {
         public int Id { get; set; }
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public string? Description { get; set; }
-        public string Price { get; set; }
+        public string? Price { get; set; }
         public int DiscountRate { get; set; }
         public int StockNumber { get; set; }
         public string? Color { get; set; }
-        public string CategoryName { get; set; }
+        public string? CategoryName { get; set; }
         public List<string>? Tags { get; set; } = new List<string>();
         public List<ProductImage>? ProductImages { get; set; } = new List<ProductImage>();
         public IEnumerable<AdditionalInfo>? AdditionalInfos { get; set; } = Enumerable.Empty<AdditionalInfo>();
@@ -30,7 +30,7 @@ namespace ShoppingMvc.ViewModels.ProductVm
         public string? Weight { get; set; }
         public string? ShippingFee { get; set; }
 
-        public ProductConditionEnum Condition { get; set; }
+        public string? Condition { get; set; }
     }
 
     public static class ProductListVmConvertion
@@ -42,8 +42,8 @@ namespace ShoppingMvc.ViewModels.ProductVm
                 Id = product.Id,
                 CategoryName = product.Category?.Name,
                 Tags = product?.Tags?.Select(t => t?.Title).Where(t => t != null).ToList(),
-                Title = product.Title,
-                Description = product.Description,
+                Title = product?.Title,
+                Description = product?.Description,
                 DiscountRate = product.DiscountRate,
                 Price = product.Price.ToString("0.00"),
                 StockNumber = product.StockNumber,
@@ -56,12 +56,12 @@ namespace ShoppingMvc.ViewModels.ProductVm
                 SellPrice = (product.Price - (product.Price * product.DiscountRate / 100)).ToString("0.00"),
                 PrimaryImageName = product?.ProductImages?.FirstOrDefault(pi => pi.IsPrimary)?.ImageName,
                 PrimaryImageUrl = product?.ProductImages?.FirstOrDefault(pi => pi.IsPrimary)?.ImageUrl,
-                ProductImages = product?.ProductImages,
+                ProductImages = product?.ProductImages?.ToList(),
                 Width = product?.Width.ToString("0.00"),
                 Height = product?.Height.ToString("0.00"),
                 Weight = product?.Weight.ToString("0.00"),
                 ShippingFee = product?.ShippingFee.ToString("0.00"),
-                Condition = product.Condition
+                Condition = product?.Condition.ToString(),
             };
         }
     }

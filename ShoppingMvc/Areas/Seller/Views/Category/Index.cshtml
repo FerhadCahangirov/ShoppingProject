@@ -58,7 +58,7 @@
             var statusFilter = $("#statusFilter").val();
 
             $.ajax({
-                url: '/Seller/Category/CategoryPaginationPartial',
+                url: '/Seller/Category/CategoriesPartial',
                 type: 'GET',
                 data: {
                     searchFilter: searchFilter,
@@ -211,7 +211,7 @@
 
 
         <div class="card-body" id="categorybody">
-            <partial model="@Model" name="CategoryPaginationPartial" />
+            <partial model="@Model" name="CategoriesPartial" />
         </div> <!-- card-body end// -->
     </div> <!-- card end// -->
 

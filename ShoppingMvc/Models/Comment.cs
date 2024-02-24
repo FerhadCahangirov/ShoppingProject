@@ -13,5 +13,13 @@ namespace ShoppingMvc.Models
 
         public AppUser User { get; set; } = new AppUser();
         public Product Product { get; set; } = new Product();
+
+        public Comment()
+        {
+            Replies = new List<Reply>();
+            User = new AppUser();
+            Product = new Product();
+            Message = string.Empty;
+        }
     }
 }

@@ -11,5 +11,12 @@ namespace ShoppingMvc.Models
 
         public Comment Comment { get; set; }
         public AppUser User { get; set; }
+
+        public Reply()
+        {
+            User = new AppUser();
+            Comment = new Comment();
+            Message = string.Empty;
+        }
     }
 }

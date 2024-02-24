@@ -10,7 +10,7 @@
 
     function removeProductFromBasket(id) {
         $.ajax({
-            url: `/Basket/RemoveProductFromBasket/${id}`,
+            url: `/Basket/RemoveBasketItem/${id}`,
             type: 'DELETE',
         }).done(function (data) {
             Command: toastr["success"]("Product added");
@@ -59,58 +59,62 @@
 </script>
 
 <div class="header-action-right">
-    <div class="header-action-2">
-        <div class="header-action-icon-2">
-            <a asp-controller="Wishlist" asp-action="Index">
-                <img class="svgInject" alt="Evara" src="~/Assets/assets/imgs/theme/icons/icon-heart.svg">
-                <span class="pro-count blue">4</span>
-            </a>
-        </div>
-        <div class="header-action-icon-2">
-            <a class="mini-cart-icon" asp-controller="Checkout" asp-action="Index">
-                <img alt="Evara" src="~/Assets/assets/imgs/theme/icons/icon-cart.svg">
-                <span id="cartCount" class="pro-count blue">@Model.Items.Sum(x => x.Count)</span>
-            </a>
-            <div class="cart-dropdown-wrap cart-dropdown-hm2" style="overflow-y:scroll;height:300px">
-                <ul id="cartItems">
-                    @foreach (var item in Model.Items)
-                    {
-                        <li class="lists">
-                            <div class="shopping-cart-img">
-                                <a href="shop-product-right.html">
-                                    <img class="default-img"
-                                         src="@(!string.IsNullOrEmpty(item.Product.PrimaryImageName) ? $"/Assets/assets/products/{item.Product.PrimaryImageName}" : "/Assets/assets/imgs/shop/product-2-1.jpg")"
-                                         alt="">
-                                </a>
-                            </div>
-                            <div class="shopping-cart-title">
-                                <h4>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="header-action-2">
+            <div class="header-action-icon-2">
+                <a asp-controller="Wishlist" asp-action="Index">
+                    <img class="svgInject" alt="Evara" src="~/Assets/assets/imgs/theme/icons/icon-heart.svg">
+                    <span class="pro-count blue">4</span>
+                </a>
+            </div>
+            <div class="header-action-icon-2">
+                <a class="mini-cart-icon" asp-controller="Checkout" asp-action="Index">
+                    <img alt="Evara" src="~/Assets/assets/imgs/theme/icons/icon-cart.svg">
+                    <span id="cartCount" class="pro-count blue">@Model.Items.Sum(x => x.Count)</span>
+                </a>
+                <div class="cart-dropdown-wrap cart-dropdown-hm2" style="overflow-y:scroll;height:300px">
+                    <ul id="cartItems">
+                        @foreach (var item in Model.Items)
+                        {
+                            <li class="lists">
+                                <div class="shopping-cart-img">
                                     <a href="shop-product-right.html">
-                                        @(
-                                            item.Product.Title.Length > 12 ? $"{item.Product.Title.Substring(0, 12)}..." : item.Product.Title
-                                            )
+                                        <img class="default-img"
+                                             src="@(!string.IsNullOrEmpty(item.Product.PrimaryImageName) ? $"/Assets/assets/products/{item.Product.PrimaryImageName}" : "/Assets/assets/imgs/shop/product-2-1.jpg")"
+                                             alt="">
                                     </a>
-                                </h4>
-                                <h4><span>@item.Count × </span>$@item.Product.SellPrice</h4>
-                            </div>
-                            <div class="shopping-cart-delete">
-                                <a onclick="removeProductFromBasket(@item.Id)" class="deleted"><i class="fi-rs-cross-small"></i></a>
-                            </div>
-                        </li>
-                    }
+                                </div>
+                                <div class="shopping-cart-title">
+                                    <h4>
+                                        <a href="shop-product-right.html">
+                                            @(
+                                                item.Product.Title.Length > 12 ? $"{item.Product.Title.Substring(0, 12)}..." : item.Product.Title
+                                                )
+                                        </a>
+                                    </h4>
+                                    <h4><span>@item.Count × </span>$@item.Product.SellPrice</h4>
+                                </div>
+                                <div class="shopping-cart-delete">
+                                    <a onclick="removeProductFromBasket(@item.Id)" class="deleted"><i class="fi-rs-cross-small"></i></a>
+                                </div>
+                            </li>
+                        }
 
-                </ul>
-                <div class="shopping-cart-footer">
-                    <div class="shopping-cart-total">
-                        <h4>Total <span id="cartTotal">$ @Model.TotalPrice</span></h4>
-                    </div>
-                    <div class="shopping-cart-button">
-                        <a asp-controller="ShopCart" asp-action="Index" class="outline">View cart</a>
-                        <a asp-controller="Checkout" asp-action="Index">Checkout</a>
+                    </ul>
+                    <div class="shopping-cart-footer">
+                        <div class="shopping-cart-total">
+                            <h4>Total <span id="cartTotal">$ @Model.TotalPrice</span></h4>
+                        </div>
+                        <div class="shopping-cart-button">
+                            <a asp-controller="ShopCart" asp-action="Index" class="outline">View cart</a>
+                            <a asp-controller="Checkout" asp-action="Index">Checkout</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+
 </div>
 

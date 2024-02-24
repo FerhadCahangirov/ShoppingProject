@@ -1,0 +1,109 @@
+﻿@model SellerOrderListItemVm
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order Tracking</h2>
+            <p>Details for Order ID: @Model.Id</p>
+        </div>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                    <span>
+                        <i class="material-icons md-calendar_today"></i> <b>@Model.OrderedDate</b>
+                    </span> <br>
+                    <small class="text-muted">Order ID: @Model.Id</small> <br>
+                    @* <small class="text-muted">Your order has been delivered</small> *@
+                </div>
+                <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200 mr-15" asp-for="Status" asp-items="@ViewBag.ShippingStatus">
+                        <option disabled>Change status</option>
+                    </select>
+                    <a class="btn btn-primary" href="#">Screenshot</a>
+                    <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print mr-5"></i>Print</a>
+                </div>
+            </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+            <div class="order-tracking mb-100">
+                <div class="steps d-flex flex-wrap flex-sm-nowrap justify-content-between">
+
+
+                    <div class="step @((Model.Status == "Confirmed" || Model.Status == "Processing" || Model.Status == "QualityCheck" || Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon"><i class="material-icons md-shopping_cart"></i></div>
+                        </div>
+                        <h4 class="step-title">Confirmed Order</h4>
+                    </div>
+
+
+                    <div class="step @((Model.Status == "Processing" || Model.Status == "QualityCheck" || Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon"><i class="material-icons md-settings"></i></div>
+                        </div>
+                        <h4 class="step-title">Processing Order</h4>
+                    </div>
+                    <div class="step @((Model.Status == "QualityCheck" || Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon"><i class="material-icons md-shopping_bag"></i></div>
+                        </div>
+                        <h4 class="step-title">Quality Check</h4>
+                    </div>
+                    <div class="step @((Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon"><i class="material-icons md-local_shipping"></i></div>
+                        </div>
+                        <h4 class="step-title">Product Dispatched</h4>
+                    </div>
+                    <div class="step @((Model.Status == "ProductDelivered") ? "completed" : "")">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon"><i class="material-icons md-check_circle"></i></div>
+                        </div>
+                        <h4 class="step-title">Product Delivered</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-50 mt-20 order-info-wrap text-center">
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <div class="text">
+                            <h6 class="mb-1">Customer</h6>
+                            <p class="mb-1">
+                                @Model.Customer.Name @Model.Customer.Surname<br> @Model.Customer.Email <br> @Model.Customer.PhoneNumber
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div> <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <div class="text">
+                            <h6 class="mb-1">Order info</h6>
+                            <p class="mb-1">
+                                Shipping: Fargo express <br> Pay method: @Model.PaymentMethod <br> Status: @Model.Status
+                            </p>
+                            <a href="#">Download info</a>
+                        </div>
+                    </article>
+                </div> <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <div class="text">
+                            <h6 class="mb-1">Deliver to</h6>
+                            <p class="mb-1">
+                                City: @Model.Order.State, @Model.Order.City <br> @Model.Order.Street <br> @Model.Order.PostalCode
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div> <!-- col// -->
+            </div> <!-- row // -->
+            <div class="row">
+                <div class="text-center mt-100 mb-50">
+                    <a class="btn btn-primary" href="/Seller/Order/OrderDetails/@Model.Id">View Order Details</a>
+                </div>
+            </div>
+        </div> <!-- card end// -->
+    </div>
+</section> <!-- content-main end// -->

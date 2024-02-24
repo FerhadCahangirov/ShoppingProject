@@ -24,7 +24,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             _env = env;
         }
 
-        public async Task<IActionResult> TagPaginationPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
+        public async Task<IActionResult> TagsPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
         {
             var query = _db.Tags.Select(c => new TagListItemVm
             {
@@ -62,12 +62,13 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = filteredData.Skip((page - 1) * size).Take(size).ToList();
 
-            PaginationVm<IEnumerable<TagListItemVm>> pag = new(total, page, (int)Math.Ceiling((decimal)total / size), paginatedData);
-            return PartialView("TagPaginationPartial", pag);
+            PaginationVm<IEnumerable<TagListItemVm>> pag = new(total, page, (int)Math.Ceiling((decimal)total / size), paginatedData, size);
+            return PartialView("TagsPartial", pag);
         }
 
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index()
         {
+            int page = 1;
             int take = 4;
             int skip = (page - 1) * take;
 
@@ -87,7 +88,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = data.Skip(skip).Take(take).ToList();
 
-            PaginationVm<IEnumerable<TagListItemVm>> pag = new PaginationVm<IEnumerable<TagListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / take), paginatedData);
+            PaginationVm<IEnumerable<TagListItemVm>> pag = new PaginationVm<IEnumerable<TagListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / take), paginatedData, take);
 
             if (paginatedData.Count == 0)
             {

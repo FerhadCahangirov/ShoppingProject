@@ -28,9 +28,13 @@ namespace ShoppingMvc.ViewComponents.ShopCartViewComponents
                 .ThenInclude(bi => bi.ProductImages)
                 .Where(bi => bi.Basket.User.UserName == username && !bi.Basket.IsOrdered);
 
+            decimal subTotalPrice = basketItemsQuery.ToList().Sum(bi =>
+                (bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) * bi.Count);
+
             decimal totalPrice = basketItemsQuery.ToList().Sum(bi =>
                 ((bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) + bi.Product.ShippingFee) * bi.Count);
 
+            decimal totalShippingFee = basketItemsQuery.ToList().Sum(bi => bi.Product.ShippingFee);
 
             var basketItems = await basketItemsQuery
             .Select(bi => new BasketProductItemVm()
@@ -39,12 +43,14 @@ namespace ShoppingMvc.ViewComponents.ShopCartViewComponents
                 Count = bi.Count,
                 Product = bi.Product.FromProduct_ToProductListItemVm(),
                 Basket = bi.Basket,
-                TotalItemPrice = (((bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) + bi.Product.ShippingFee) * bi.Count).ToString("")
+                TotalItemPrice = (((bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) + bi.Product.ShippingFee) * bi.Count).ToString("0.00")
             }).ToListAsync();
 
             var viewModel = new BasketTotalVm()
             {
+                SubTotalPrice = subTotalPrice.ToString("0.00"),
                 TotalPrice = totalPrice.ToString("0.00"),
+                TotalShippingFee = totalShippingFee.ToString("00"),
                 Items = basketItems
             };
 

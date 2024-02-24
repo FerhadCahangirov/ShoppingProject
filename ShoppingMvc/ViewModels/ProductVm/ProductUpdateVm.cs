@@ -56,7 +56,7 @@ namespace ShoppingMvc.ViewModels.ProductVm
                 Condition = product.Condition,
                 TagsId = product?.Tags?.Select(t => t.Id).ToList(),
                 AdditionalInfos = product?.AdditionalInfos?.ToList(),
-                ProductImagesData = product?.ProductImages
+                ProductImagesData = product?.ProductImages?.ToList()
             };
         }
     }

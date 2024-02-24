@@ -60,13 +60,13 @@
             <div class="col-lg-2 col-sm-2 col-4 col-action text-end action-buttons">
                 @if (item.IsDeleted)
                 {
-                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm font-sm rounded btn-brand">
+                    <a href="/Seller/Category/Update/@item.Id" class="btn btn-sm font-sm rounded btn-brand">
                         <i class="material-icons md-edit"></i> Edit
                     </a>
                 }
                 else
                 {
-                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm font-sm rounded btn-brand">
+                    <a href="/Seller/Category/Update/@item.Id" class="btn btn-sm font-sm rounded btn-brand">
                         <i class="material-icons md-edit"></i> Edit
                     </a>
                 }

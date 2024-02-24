@@ -30,7 +30,7 @@ public class SellerAndApprovedHandler : AuthorizationHandler<SellerAndApprovedRe
             .Include(s => s.Seller)
             .FirstOrDefaultAsync(x => x.Seller.UserName == userName);
 
-        if (sellerData != null && sellerData.IsApproved == true) 
+        if (sellerData != null && sellerData.IsApproved == true && sellerData.IsBanned == false) 
         {
             context.Succeed(requirement);
         }

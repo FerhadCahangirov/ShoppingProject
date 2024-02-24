@@ -4,6 +4,7 @@ using ShoppingMvc.Models.Identity;
 using ShoppingMvc.Models;
 using ShoppingMvc.Contexts;
 using Microsoft.EntityFrameworkCore;
+using ShoppingMvc.ViewModels.BasketVm;
 
 namespace ShoppingMvc.Controllers
 {
@@ -99,7 +100,23 @@ namespace ShoppingMvc.Controllers
 
         [HttpDelete]
         [Authorize(Policy = "AuthRequiredPolicy")]
-        public async Task<IActionResult> RemoveProductFromBasket(int id)
+        public async Task<IActionResult> ClearBasket()
+        {
+            AppUser? user = await GetAuthenticatedUserAsync();
+
+            Basket? basket = user.Baskets?.Single(b => !b.IsOrdered);
+
+            if (basket == null) return NotFound();
+
+            basket.BasketItems.Clear();
+
+            await _db.SaveChangesAsync();
+            return new JsonResult(new { Success = true });
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = "AuthRequiredPolicy")]
+        public async Task<IActionResult> RemoveBasketItem(int id)
         {
             AppUser? user = await GetAuthenticatedUserAsync();
             var basketItem = user.Baskets?
@@ -109,10 +126,32 @@ namespace ShoppingMvc.Controllers
 
             if (basketItem == null) return NotFound();
 
-            _db.BasketItems.Remove(basketItem);    
+            _db.BasketItems.Remove(basketItem);
             await _db.SaveChangesAsync();
 
             return new JsonResult(new { Success = true });
         }
+
+        [HttpPut]
+        [Authorize(Policy = "AuthRequiredPolicy")]
+        public async Task<IActionResult> UpdateBasketItem(int id, int count)
+        {
+            AppUser? user = await GetAuthenticatedUserAsync();
+
+            BasketItem? basketItem = user.Baskets?
+                .Single(b => !b.IsOrdered)?
+                .BasketItems
+                .FirstOrDefault(bi => bi.Id == id);
+
+            if (basketItem == null) return NotFound();
+
+            basketItem.Count = count;
+
+            _db.BasketItems.Update(basketItem);
+            await _db.SaveChangesAsync();
+
+            return new JsonResult(new { success = true });
+        }
+
     }
 }

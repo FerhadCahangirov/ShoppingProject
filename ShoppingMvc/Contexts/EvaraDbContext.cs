@@ -24,6 +24,11 @@ namespace ShoppingMvc.Contexts
         public DbSet<Basket> Baskets { get; set; }
         public DbSet<SellerData> SellerDatas { get; set; }
         public DbSet<BasketItem> BasketItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderTracking> OrderTrackings { get; set; }
+        public DbSet<ProductVisitorData> ProductVisitorDatas { get; set; }
+        public DbSet<SellerVisitorData> SellerVisitorDatas { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,6 +45,16 @@ namespace ShoppingMvc.Contexts
                 .HasOne(p => p.SellerData)
                 .WithMany(s => s.Products)
                 .HasForeignKey(p => p.SellerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<OrderTracking>()
+                .HasOne<SellerData>(ot => ot.SellerData)
+                .WithMany(sd => sd.OrderTrackings)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<OrderTracking>()
+                .HasOne<Order>(ot => ot.Order)
+                .WithMany(o => o.OrderTrackings)
                 .OnDelete(DeleteBehavior.NoAction);
         }
 
@@ -70,8 +85,5 @@ namespace ShoppingMvc.Contexts
 
             return base.SaveChangesAsync(cancellationToken);
         }
-
-
-
     }
 }

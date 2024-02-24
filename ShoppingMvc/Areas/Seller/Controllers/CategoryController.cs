@@ -20,7 +20,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             _db = db;
         }
 
-        public async Task<IActionResult> CategoryPaginationPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter,int page = 1, int size = 4)
+        public async Task<IActionResult> CategoriesPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter,int page = 1, int size = 4)
         {
             var query = _db.Categories.Select(c => new CategoryListItemVm
             {
@@ -58,14 +58,14 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = filteredData.Skip((page - 1) * size).Take(size).ToList();
 
-            PaginationVm<IEnumerable<CategoryListItemVm>> pagination = new(totalCount, page, (int)Math.Ceiling((decimal)totalCount / size), paginatedData);
+            PaginationVm<IEnumerable<CategoryListItemVm>> pagination = new(totalCount, page, (int)Math.Ceiling((decimal)totalCount / size), paginatedData, size);
 
             if (paginatedData.Count == 0)
             {
                 ViewBag.Message = "Nothing Found";
             }
 
-            return PartialView("CategoryPaginationPartial", pagination);
+            return PartialView("CategoriesPartial", pagination);
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -89,7 +89,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = data.Skip(skip).Take(size).ToList();
 
-            PaginationVm<IEnumerable<CategoryListItemVm>> pag = new PaginationVm<IEnumerable<CategoryListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / size), paginatedData);
+            PaginationVm<IEnumerable<CategoryListItemVm>> pag = new PaginationVm<IEnumerable<CategoryListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / size), paginatedData, size);
 
             if (paginatedData.Count == 0)
             {
@@ -139,8 +139,8 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             if (data == null) return NotFound();
             return View(new CategoryUpdateVm
             {
+                Id = data.Id,
                 Name = data.Name,
-
             });
         }
         [HttpPost]

@@ -28,6 +28,9 @@ namespace ShoppingMvc.ViewComponents.BasketViewComponents
                 .ThenInclude(bi => bi.ProductImages)
                 .Where(bi => bi.Basket.User.UserName == username && !bi.Basket.IsOrdered);
 
+            decimal subTotalPrice = basketItemsQuery.ToList().Sum(bi =>
+                (bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) * bi.Count);
+
             decimal totalPrice = basketItemsQuery.ToList().Sum(bi =>
                 ((bi.Product.Price - (bi.Product.Price * bi.Product.DiscountRate / 100)) + bi.Product.ShippingFee) * bi.Count);
 
@@ -44,6 +47,7 @@ namespace ShoppingMvc.ViewComponents.BasketViewComponents
 
             var viewModel = new BasketTotalVm()
             {
+                SubTotalPrice = subTotalPrice.ToString("0.00"),
                 TotalPrice = totalPrice.ToString("0.00"),
                 Items = basketItems
             };

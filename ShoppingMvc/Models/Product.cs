@@ -23,10 +23,24 @@ namespace ShoppingMvc.Models
         public ProductConditionEnum Condition {  get; set; }
 
         public IEnumerable<AdditionalInfo>? AdditionalInfos { get; set; }
-        public List<ProductImage>? ProductImages { get; set; }
+        public IEnumerable<ProductImage>? ProductImages { get; set; }
         public Category? Category { get; set; }
         public IEnumerable<Tag>? Tags { get; set; }
-        public List<Comment>? Comments { get; set; }
+        public IEnumerable<Comment>? Comments { get; set; }
         public SellerData SellerData { get; set; }
+        public IEnumerable<ProductVisitorData> ProductVisitorDatas { get; set; }
+
+
+        public Product()
+        {
+            AdditionalInfos = new List<AdditionalInfo>();
+            ProductImages = new List<ProductImage>();
+            Category = new Category();
+            Tags = new List<Tag>();
+            Comments = new List<Comment>();
+            SellerData = new SellerData();
+            ProductVisitorDatas = new List<ProductVisitorData>();
+        }
+
     }
 }

@@ -384,11 +384,11 @@
                                                                 <div class="user justify-content-between d-flex">
                                                                     <div class="thumb text-center">
                                                                         <img src="@(string.IsNullOrEmpty(reply.User?.ProfileImageUrl) ? "/Assets/assets/imgs/people/avatar1.jpg" : $"/{reply.User.ProfileImageUrl}")" alt="" style="width: 70px; height: 70px">
-                                                                        <h6><a href="#">@reply.User.UserName</a></h6>
+                                                                        <h6><a href="#">@reply?.User?.UserName</a></h6>
                                                                         <p class="font-xxs">Since 2012</p>
                                                                     </div>
                                                                     <div class="desc">
-                                                                        <p>@reply.Message</p>
+                                                                        <p>@reply?.Message</p>
                                                                         <div class="d-flex justify-content-between">
                                                                             <div class="d-flex align-items-center">
                                                                                 <p class="font-xs mr-30">@reply.CreatedTime.ToString("MMMM d, 'at' h:mm tt");</p>

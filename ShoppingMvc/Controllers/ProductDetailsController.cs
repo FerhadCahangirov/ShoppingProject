@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ShoppingMvc.Contexts;
+using ShoppingMvc.Filters;
 using ShoppingMvc.Models;
 using ShoppingMvc.Models.Identity;
 using ShoppingMvc.ViewModels.CommentVm;
@@ -24,6 +25,7 @@ namespace ShoppingMvc.Controllers
             _userManager = userManager;
         }
 
+        [ProductVisitorTrackingFilterFactory]
         public IActionResult Index(int id)
         {
             Product? product = _db.Products
@@ -40,6 +42,7 @@ namespace ShoppingMvc.Controllers
                     .Include(c => c.Product)
                     .Include(c => c.User)
                     .Include(c => c.Replies)
+                    .ThenInclude(r => r.User)
                     .Where(c => c.Product == product)
                     .ToList();
 
@@ -75,7 +78,6 @@ namespace ShoppingMvc.Controllers
             return View(model);
         }
 
-        // POST: ProductDetails/AddComment
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddComment(CommentViewModel commentViewModel)

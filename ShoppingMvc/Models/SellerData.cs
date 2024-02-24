@@ -22,8 +22,20 @@ namespace ShoppingMvc.Models
         public string? ShopLogoUrl { get; set; }
         public string? ThumbnailImageUrl { get; set; }
 
-        public List<Product>? Products { get; set; }
+        public bool IsBanned { get; set; } = false;
+
+        public IEnumerable<Product>? Products { get; set; }
+        public IEnumerable<OrderTracking> OrderTrackings { get; set; }
+        public IEnumerable<SellerVisitorData> SellerVisitorDatas {  get; set; }
 
         public AppUser Seller { get; set; }
+
+        public SellerData()
+        {
+            Products = new List<Product>();
+            OrderTrackings = new List<OrderTracking>();
+            Seller = new AppUser();
+            SellerVisitorDatas = new List<SellerVisitorData>();
+        }
     }
 }

@@ -6,5 +6,12 @@
         public string Value { get; set; }
 
         public Product Product { get; set; }
+
+        public AdditionalInfo()
+        {
+            Key = string.Empty;
+            Value = string.Empty;
+            Product = new Product();
+        }
     }
 }

@@ -180,6 +180,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
 
             await _db.SaveChangesAsync();
 
+            TempData["SellerApproved"] = true;
             return RedirectToAction("SellerDetails", id);
         }
 

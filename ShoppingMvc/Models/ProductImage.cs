@@ -5,5 +5,10 @@
         public bool IsPrimary { get; set; }
 
         public Product Product { get; set; }
+
+        public ProductImage() 
+        {
+            Product = new Product();
+        }
     }
 }

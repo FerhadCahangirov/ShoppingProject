@@ -14,7 +14,7 @@
             var searchFilter = $("#searchFilter").val();
 
             $.ajax({
-                url: '/Seller/Product/ProductPagination',
+                url: '/Seller/Product/ProductsPartial',
                 type: 'GET',
                 data: {
                     categoryFilter: categoryValue,
@@ -130,6 +130,7 @@
         </div>
         <div>
             <a href="/Seller/Product/Create" class="btn btn-primary btn-sm rounded">Create new</a>
+            @* <a asp-controller="Product" asp-action="Create" class="btn btn-primary btn-sm rounded">Create new</a> *@
         </div>
     </div>
     <div class="card mb-4">
@@ -167,7 +168,7 @@
 
 
         <div class="card-body" id="productsbody">
-            <partial model="Model" name="ProductPagination" />
+            <partial model="Model" name="ProductsPartial" />
         </div> <!-- card-body end// -->
     </div> <!-- card end// -->
 

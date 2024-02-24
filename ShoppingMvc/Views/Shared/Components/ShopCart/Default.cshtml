@@ -1,5 +1,168 @@
 ﻿@model BasketTotalVm
 
+<script>
+
+    function fetchShopCart() {
+        fetch(window.location.origin + '/ShopCart/GetShopCart')
+            .then(res => res.text())
+            .then(data => $("#shopcart").html(data));
+
+        fetch(window.location.origin + '/Basket/Index')
+            .then(res => res.text())
+            .then(data => $("#basket").html(data));
+    }
+
+    function updateBasketItem(id, count) {
+        $.ajax({
+            url: `/Basket/UpdateBasketItem`,
+            type: 'PUT',
+            data: {
+                id: id,
+                count: count
+            }
+        }).done(function (data) {
+            Command: toastr["success"]("Basket item updated");
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            fetchShopCart();
+
+        }).fail(function () {
+            Command: toastr["danger"]("Basket item could not updated");
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+        });
+    }
+
+    function clearBasket() {
+        $.ajax({
+            url: `/Basket/ClearBasket`,
+            type: 'DELETE',
+        }).done(function (data) {
+            Command: toastr["success"]("Basket cleared");
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            fetchShopCart();
+
+        }).fail(function () {
+            Command: toastr["danger"]("Failed clearing basket");
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+        });
+    }
+
+    function removeProductFromBasket(id) {
+        $.ajax({
+            url: `/Basket/RemoveBasketItem/${id}`,
+            type: 'DELETE',
+        }).done(function (data) {
+            Command: toastr["success"]("Basket item deleted");
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            fetchShopCart();
+
+        }).fail(function () {
+            Command: toastr["danger"]("Basket item could not deleted");
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "500",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+        });
+    }
+
+
+</script>
+
 <section class="mt-50 mb-50">
     <div class="container">
         <div class="row">
@@ -26,57 +189,49 @@
                                              alt="">
                                     </td>
                                     <td class="product-des product-name">
-                                        <h5 class="product-name"><a href="shop-product-right.html">@item.Product.Title</a></h5>
+                                        <h5 class="product-name"><a href="/ProductDetails/Index/@item.Product.Id">@item.Product.Title</a></h5>
                                     </td>
                                     <td class="price" data-title="Price"><span>$@item.Product.SellPrice </span></td>
                                     <td class="text-center" data-title="Stock">
+
                                         <div class="detail-qty border radius  m-auto">
-                                            <a href="#" class="qty-change qty-down" data-item-id="@item.Id"><i class="fi-rs-angle-small-down"></i></a>
+                                            <a onclick="updateBasketItem(@item.Id, @(item.Count - 1))" class="qty-change qty-down" data-item-id="@item.Id">
+                                                <i class="fi-rs-angle-small-down"></i>
+                                            </a>
                                             <span class="qty-val">@item.Count</span>
-                                            <a href="#" class="qty-change qty-up" data-item-id="@item.Id"><i class="fi-rs-angle-small-up"></i></a>
+                                            <a onclick="updateBasketItem(@item.Id, @(item.Count + 1))" class="qty-change qty-up" data-item-id="@item.Id">
+                                                <i class="fi-rs-angle-small-up"></i>
+                                            </a>
                                         </div>
+
                                     </td>
                                     <td class="text-right subtotal" data-title="Cart">
                                         <span>$ @(item.TotalItemPrice)</span>
                                     </td>
-                                    <td class="action" data-title="Remove"><a href="#" class="text-muted"><i class="fi-rs-trash"></i></a></td>
+                                    <td class="action" data-title="Remove">
+                                        <a onclick="removeProductFromBasket(@item.Id)" class="text-muted">
+                                            <i class="fi-rs-trash"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             }
 
                             <tr>
                                 <td colspan="6" class="text-end">
-                                    <a href="#" class="text-muted"> <i class="fi-rs-cross-small"></i> Clear Cart</a>
+                                    <a onclick="clearBasket()" class="text-muted">
+                                        <i class="fi-rs-cross-small"></i> Clear Cart
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="cart-action text-end">
-                    <a class="btn  mr-10 mb-sm-15"><i class="fi-rs-shuffle mr-10"></i>Update Cart</a>
                     <a asp-action="Index" asp-controller="Home" class="btn"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
                 </div>
                 <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
                 <div class="row mb-50">
                     <div class="col-lg-6 col-md-12">
-                        <div class="heading_s1 mb-3">
-                            <h4>Calculate Shipping</h4>
-                        </div>
-                        <p class="mt-15 mb-30">Flat rate: <span class="font-xl text-brand fw-900">5%</span></p>
-                        <form class="field_form shipping_calculator">
-                            <div class="form-row row">
-                                <div class="form-group col-lg-6">
-                                    <input required="required" placeholder="State / Country" name="name" type="text">
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <input required="required" placeholder="PostCode / ZIP" name="name" type="text">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-lg-12">
-                                    <button class="btn  btn-sm"><i class="fi-rs-shuffle mr-10"></i>Update</button>
-                                </div>
-                            </div>
-                        </form>
                         <div class="mb-30 mt-50">
                             <div class="heading_s1 mb-3">
                                 <h4>Apply Coupon</h4>
@@ -109,15 +264,18 @@
                                     <tbody>
                                         <tr>
                                             <td class="cart_total_label">Cart Subtotal</td>
-                                            <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">$0</span></td>
+                                            <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">$@Model.SubTotalPrice</span></td>
                                         </tr>
                                         <tr>
                                             <td class="cart_total_label">Shipping</td>
-                                            <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
+                                            <td class="cart_total_amount">
+                                                <i class="ti-gift mr-5"></i>
+                                                @(Model.TotalShippingFee == "000" ? "Free Shipping" : $"$ {Model.TotalShippingFee}")
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td class="cart_total_label">Total</td>
-                                            <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand">$0</span></strong></td>
+                                            <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand">$@Model.TotalPrice</span></strong></td>
                                         </tr>
                                     </tbody>
                                 </table>

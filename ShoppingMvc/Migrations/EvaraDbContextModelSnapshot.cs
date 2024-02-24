@@ -427,6 +427,113 @@ namespace ShoppingMvc.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ShoppingMvc.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("AdditionalAddressInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BasketId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CVV")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardholderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExpiryMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExpiryYear")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BasketId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.OrderTracking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SellerDataId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShippingStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("SellerDataId");
+
+                    b.ToTable("OrderTrackings");
+                });
+
             modelBuilder.Entity("ShoppingMvc.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -536,6 +643,44 @@ namespace ShoppingMvc.Migrations
                     b.ToTable("ProductImages");
                 });
 
+            modelBuilder.Entity("ShoppingMvc.Models.ProductVisitorData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HostAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProductVisitorDatas");
+                });
+
             modelBuilder.Entity("ShoppingMvc.Models.Reply", b =>
                 {
                     b.Property<int>("Id")
@@ -598,6 +743,9 @@ namespace ShoppingMvc.Migrations
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -648,6 +796,44 @@ namespace ShoppingMvc.Migrations
                     b.HasIndex("SellerId");
 
                     b.ToTable("SellerDatas");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.SellerVisitorData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HostAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SellerDataId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SellerDataId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SellerVisitorDatas");
                 });
 
             modelBuilder.Entity("ShoppingMvc.Models.Slider", b =>
@@ -849,6 +1035,36 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ShoppingMvc.Models.Order", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.Basket", "Basket")
+                        .WithMany()
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Basket");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.OrderTracking", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.Order", "Order")
+                        .WithMany("OrderTrackings")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingMvc.Models.SellerData", "SellerData")
+                        .WithMany("OrderTrackings")
+                        .HasForeignKey("SellerDataId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("SellerData");
+                });
+
             modelBuilder.Entity("ShoppingMvc.Models.Product", b =>
                 {
                     b.HasOne("ShoppingMvc.Models.Category", "Category")
@@ -875,6 +1091,23 @@ namespace ShoppingMvc.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShoppingMvc.Models.ProductVisitorData", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.Product", "Product")
+                        .WithMany("ProductVisitorDatas")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingMvc.Models.Identity.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ShoppingMvc.Models.Reply", b =>
@@ -907,6 +1140,23 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("Seller");
                 });
 
+            modelBuilder.Entity("ShoppingMvc.Models.SellerVisitorData", b =>
+                {
+                    b.HasOne("ShoppingMvc.Models.SellerData", "SellerData")
+                        .WithMany("SellerVisitorDatas")
+                        .HasForeignKey("SellerDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingMvc.Models.Identity.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("SellerData");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ShoppingMvc.Models.Basket", b =>
                 {
                     b.Navigation("BasketItems");
@@ -931,6 +1181,11 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("ReplyComments");
                 });
 
+            modelBuilder.Entity("ShoppingMvc.Models.Order", b =>
+                {
+                    b.Navigation("OrderTrackings");
+                });
+
             modelBuilder.Entity("ShoppingMvc.Models.Product", b =>
                 {
                     b.Navigation("AdditionalInfos");
@@ -938,11 +1193,17 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("ProductImages");
+
+                    b.Navigation("ProductVisitorDatas");
                 });
 
             modelBuilder.Entity("ShoppingMvc.Models.SellerData", b =>
                 {
+                    b.Navigation("OrderTrackings");
+
                     b.Navigation("Products");
+
+                    b.Navigation("SellerVisitorDatas");
                 });
 #pragma warning restore 612, 618
         }

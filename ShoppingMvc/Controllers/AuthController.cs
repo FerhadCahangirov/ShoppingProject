@@ -7,6 +7,7 @@ using ShoppingMvc.Helpers;
 using ShoppingMvc.Models;
 using ShoppingMvc.Models.Identity;
 using ShoppingMvc.ViewModels.AuthVm;
+using ShoppingMvc.ViewModels.OrderVm;
 
 namespace ShoppingMvc.Controllers
 {
@@ -58,7 +59,7 @@ namespace ShoppingMvc.Controllers
                 }
             }
             ViewBag.RegistrationSuccess = true;
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Auth");
         }
         [Authorize(Policy = "NotAuthPolicy")]
         public async Task<IActionResult> Login()
@@ -209,24 +210,37 @@ namespace ShoppingMvc.Controllers
 
             await _db.SaveChangesAsync();
 
-            return View();
+            return Redirect("/");
         }
 
 
         [Authorize]
-        public async Task<IActionResult> ProfileSettings()
+        public async Task<IActionResult> Account()
         {
             var username = HttpContext.User.Identity?.Name;
 
             AppUser? user = await _db.Users.FirstOrDefaultAsync(x => x.UserName == username);
             if (user == null) return NotFound();
 
-            return View(user.FromAppUser_ToProfileSettingsVm());
+            AccountVm accountVm = user.FromAppUser_ToAccountVm();
+
+            IEnumerable<Order> orders = await _db.Orders
+                .Include(o => o.Basket)
+                .ThenInclude(b => b.User)
+                .Include(o => o.Basket)
+                .ThenInclude(b => b.BasketItems)
+                .ThenInclude(bi => bi.Product)
+                .Where(o => o.Basket.User.UserName == username).ToListAsync();
+
+            IEnumerable<CustomerOrderListItemVm> ordersVm = orders.Select(o => o.FromOrder_ToCustomerOrderListItemVm());
+            accountVm.Orders = ordersVm;
+                
+            return View(accountVm);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> UpdateProfile(ProfileSettingsVm vm)
+        public async Task<IActionResult> UpdateProfile(AccountVm vm)
         {
             AppUser? user = await _db.Users.FirstOrDefaultAsync(x => x.UserName == vm.UserName);
             if (user == null) return NotFound();
@@ -266,7 +280,7 @@ namespace ShoppingMvc.Controllers
 
             await _db.SaveChangesAsync();
 
-            return RedirectToAction("ProfileSettings");
+            return RedirectToAction("Account", "Auth");
         }
     }
 }

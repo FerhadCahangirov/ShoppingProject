@@ -16,8 +16,17 @@ namespace ShoppingMvc.Models
         public int ExpiryYear { get; set; }
         public string CVV { get; set; }
 
-        public ShippingStatus? Status { get; set; }
+        public string? PhoneNumber { get; set; }
+
+        public PaymentMethods PaymentMethod { get; set; }
 
         public Basket Basket { get; set; }
+        public IEnumerable<OrderTracking>? OrderTrackings { get; set; }
+
+        public Order()
+        {
+            Basket = new Basket();
+            OrderTrackings = new List<OrderTracking>(); 
+        }
     }
 }
