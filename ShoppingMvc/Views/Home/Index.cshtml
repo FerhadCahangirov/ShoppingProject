@@ -1,6 +1,6 @@
 ﻿@model HomeVm
 
-@section styles{                                                              
+@section styles{
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 }
 @section scripts{
@@ -15,57 +15,73 @@
 
         function addProductToBasket(productId) {
 
-                $.ajax({
-                    url: `/Basket/AddProductToBasket/${productId}`,
-                    type: 'POST',
-                }).done(function (data) {
-                    Command: toastr["success"]("Product added");
-                    toastr.options = {
-                        "closeButton": false,
-                        "debug": false,
-                        "newestOnTop": false,
-                        "progressBar": false,
-                        "positionClass": "toast-top-right",
-                        "preventDuplicates": false,
-                        "onclick": null,
-                        "showDuration": "300",
-                        "hideDuration": "500",
-                        "timeOut": "1000",
-                        "extendedTimeOut": "1000",
-                        "showEasing": "swing",
-                        "hideEasing": "linear",
-                        "showMethod": "fadeIn",
-                        "hideMethod": "fadeOut"
-                    };
+            $.ajax({
+                url: `/Basket/AddProductToBasket/${productId}`,
+                type: 'POST',
+            }).done(function (data) {
+                Command: toastr["success"]("Product added");
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "500",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
 
-                    fetchBasket();
+                fetchBasket();
 
-                }).fail(function () {
-                    Command: toastr["danger"]("Product deleted");
-                    toastr.options = {
-                        "closeButton": false,
-                        "debug": false,
-                        "newestOnTop": false,
-                        "progressBar": false,
-                        "positionClass": "toast-top-right",
-                        "preventDuplicates": false,
-                        "onclick": null,
-                        "showDuration": "300",
-                        "hideDuration": "500",
-                        "timeOut": "1000",
-                        "extendedTimeOut": "1000",
-                        "showEasing": "swing",
-                        "hideEasing": "linear",
-                        "showMethod": "fadeIn",
-                        "hideMethod": "fadeOut"
-                    };
-                });
+            }).fail(function () {
+                Command: toastr["danger"]("Product deleted");
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "500",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+            });
         };
 
 
         fetchBasket();
     </script>
 }
+
+@if (TempData["SellerRequestSent"] != null && (bool)TempData["SellerRequestSent"] == true)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            position: "top-center",
+            icon: "success",
+            title: "Your Request to Become a Seller Has Been Successfully Received!",
+            text: "Your data will be reviewed, and we will notify you within 3 to 4 working days.",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
+}
+
 <main class="main">
     <section class="home-slider position-relative pt-50">
         <div class="hero-slider-1 dot-style-1 dot-style-1-position-1">

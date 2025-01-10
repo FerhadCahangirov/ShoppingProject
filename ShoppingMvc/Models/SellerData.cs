@@ -1,4 +1,5 @@
-﻿using ShoppingMvc.Models.Identity;
+﻿using ShoppingMvc.Enums;
+using ShoppingMvc.Models.Identity;
 
 namespace ShoppingMvc.Models
 {
@@ -17,16 +18,19 @@ namespace ShoppingMvc.Models
         public string? ShopStreet { get; set; }
         public string? ShopCity { get; set; }
         public string? ShopCountry { get; set; }
-        public string? ShopState { get; set; }
         public string? ShopPostalCode { get; set; }
         public string? ShopLogoUrl { get; set; }
         public string? ThumbnailImageUrl { get; set; }
+
+        public SellerCategories ShopCategory { get; set; }
 
         public bool IsBanned { get; set; } = false;
 
         public IEnumerable<Product>? Products { get; set; }
         public IEnumerable<OrderTracking> OrderTrackings { get; set; }
         public IEnumerable<SellerVisitorData> SellerVisitorDatas {  get; set; }
+        public IEnumerable<Category> Categories { get; set; }
+        public IEnumerable<Tag> Tags { get; set; }
 
         public AppUser Seller { get; set; }
 
@@ -36,6 +40,8 @@ namespace ShoppingMvc.Models
             OrderTrackings = new List<OrderTracking>();
             Seller = new AppUser();
             SellerVisitorDatas = new List<SellerVisitorData>();
+            Categories = new List<Category>();
+            Tags = new List<Tag>();
         }
     }
 }

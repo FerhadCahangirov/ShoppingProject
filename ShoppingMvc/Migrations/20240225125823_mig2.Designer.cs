@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoppingMvc.Contexts;
 
@@ -11,9 +12,10 @@ using ShoppingMvc.Contexts;
 namespace ShoppingMvc.Migrations
 {
     [DbContext(typeof(EvaraDbContext))]
-    partial class EvaraDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240225125823_mig2")]
+    partial class mig2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -270,15 +272,10 @@ namespace ShoppingMvc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SellerId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SellerId");
 
                     b.ToTable("Categories");
                 });
@@ -902,9 +899,6 @@ namespace ShoppingMvc.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SellerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -913,8 +907,6 @@ namespace ShoppingMvc.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SellerId");
 
                     b.ToTable("Tags");
                 });
@@ -1024,17 +1016,6 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("Basket");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ShoppingMvc.Models.Category", b =>
-                {
-                    b.HasOne("ShoppingMvc.Models.SellerData", "Seller")
-                        .WithMany("Categories")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("ShoppingMvc.Models.Comment", b =>
@@ -1178,17 +1159,6 @@ namespace ShoppingMvc.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShoppingMvc.Models.Tag", b =>
-                {
-                    b.HasOne("ShoppingMvc.Models.SellerData", "Seller")
-                        .WithMany("Tags")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Seller");
-                });
-
             modelBuilder.Entity("ShoppingMvc.Models.Basket", b =>
                 {
                     b.Navigation("BasketItems");
@@ -1231,15 +1201,11 @@ namespace ShoppingMvc.Migrations
 
             modelBuilder.Entity("ShoppingMvc.Models.SellerData", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("OrderTrackings");
 
                     b.Navigation("Products");
 
                     b.Navigation("SellerVisitorDatas");
-
-                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

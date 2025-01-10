@@ -1,4 +1,5 @@
-﻿using ShoppingMvc.Models;
+﻿using ShoppingMvc.Extensions;
+using ShoppingMvc.Models;
 using ShoppingMvc.Models.Identity;
 using ShoppingMvc.ViewModels.BasketVm;
 using ShoppingMvc.ViewModels.ProductVm;
@@ -16,6 +17,7 @@ namespace ShoppingMvc.ViewModels.OrderVm
         public string? TotalShippingFee { get; set; }
         public int ItemCount { get; set; }
         public string? PaymentMethod { get; set; }
+        public string? Tracking { get; set; }
 
         public IEnumerable<BasketProductItemVm> Items { get; set; }
         public AppUser Customer { get; set; }
@@ -61,10 +63,12 @@ namespace ShoppingMvc.ViewModels.OrderVm
 
             AppUser customer = order.Basket.User;
 
+            var status = order.OrderTrackings?.Single(ot => ot.SellerData.Seller == seller).ShippingStatus.GetDescription();
+
             return new SellerOrderListItemVm
             {
                 Id = order.Id,
-                OrderedDate = order.CreatedTime.ToString("ddd, MMM d, yyyy, h:mmtt", CultureInfo.InvariantCulture),
+                OrderedDate = order.CreatedTime.ToString("ddd, MMM d, yyyy, h:mmtt", CultureInfo.InvariantCulture),     
                 PaymentMethod = order.PaymentMethod.ToString(),
                 TotalPrice = totalPrice.ToString("0.00"),
                 SubTotalPrice = totalSubPrice.ToString("0.00"),
@@ -73,6 +77,8 @@ namespace ShoppingMvc.ViewModels.OrderVm
                 Items = basketProductItemVms,
                 Customer = customer,
                 Order = order,
+                Status = status,
+                Tracking = status?.Replace(" ", "")
             };
         }
     }

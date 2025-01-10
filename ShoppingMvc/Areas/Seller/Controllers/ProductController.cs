@@ -27,7 +27,10 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             _env = env;
         }
 
-        private async Task<SellerData> GetActiveSellerDataAsync() => await _db.SellerDatas.Include(s => s.Seller).FirstOrDefaultAsync(x => x.Seller.UserName == HttpContext.User.Identity.Name);
+        private async Task<SellerData> GetActiveSellerDataAsync() =>
+            await _db.SellerDatas
+                .Include(s => s.Seller)
+                .FirstOrDefaultAsync(x => x.Seller.UserName == HttpContext.User.Identity.Name);
 
         public async Task<IActionResult> ProductsPartial(string? searchFilter, string? categoryFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
         {

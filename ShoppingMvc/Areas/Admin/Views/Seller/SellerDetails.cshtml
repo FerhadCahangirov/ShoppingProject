@@ -54,23 +54,24 @@
         $.ajax({
             type: 'POST',
             url: `/Admin/Seller/ApproveSeller/${id}`,
-            success: function (response) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Primary Image Changed",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            },
             error: function (xhr, status, error) {
                 Swal.fire({
                     position: "top-center",
                     icon: "error",
-                    title: "Primary Image Could Not Changed",
+                    title: "Failed to approve seller!",
                     showConfirmButton: false,
                     timer: 1500
                 });
             }
+        }).done(function () {
+            window.location.reload();
+            Swal.fire({
+                position: "top-center",
+                icon: "success",
+                title: "Seller has been approved",
+                showConfirmButton: false,
+                timer: 1500
+            });
         });
     }
 </script>
@@ -100,7 +101,7 @@
                 </div> <!--  col.// -->
                 <div class="col-xl col-lg">
                     <h3>@Model.SellerData.ShopName</h3>
-                    <p>@Model.SellerData.ShopStreet @Model.SellerData.ShopState, @Model.SellerData.ShopCity @Model.SellerData.ShopPostalCode</p>
+                    <p>@Model.SellerData.ShopStreet @Model.SellerData.ShopCountry, @Model.SellerData.ShopCity @Model.SellerData.ShopPostalCode</p>
                 </div> <!--  col.// -->
 
 
@@ -133,7 +134,7 @@
                     <h6>Address</h6>
                     <p>
                         Country: @Model.SellerData.ShopCountry <br>
-                        Address: @Model.SellerData.ShopStreet @Model.SellerData.ShopState<br>
+                        Address: @Model.SellerData.ShopStreet @Model.SellerData.ShopCountry<br>
                         Postal code: @Model.SellerData.ShopPostalCode
                     </p>
                 </div> <!--  col.// -->

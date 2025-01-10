@@ -4,6 +4,7 @@ namespace ShoppingMvc.Models
     public class Tag : BaseEntity
     {
         private string _title;
+        public SellerData Seller { get; set; }
 
         public string Title
         {
@@ -26,6 +27,7 @@ namespace ShoppingMvc.Models
         public Tag()
         {
             Products = new List<Product>();
+            Seller = new SellerData();
         }
     }
 }

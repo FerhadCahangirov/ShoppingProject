@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Models;
 using ShoppingMvc.ViewModels.CategoryVm;
@@ -20,17 +21,28 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             _db = db;
         }
 
-        public async Task<IActionResult> CategoriesPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter,int page = 1, int size = 4)
+        private async Task<SellerData> GetActiveSellerAsync() =>
+            await _db.SellerDatas
+                .Include(x => x.Seller)
+                .FirstAsync(x => x.Seller.UserName == HttpContext.User.Identity.Name);
+
+
+        public async Task<IActionResult> CategoriesPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
         {
-            var query = _db.Categories.Select(c => new CategoryListItemVm
-            {
-                Id = c.Id,
-                CreatedTime = c.CreatedTime,
-                UpdatedTime = c.UpdatedTime,
-                IsDeleted = c.IsDeleted,
-                IsArchived = c.IsArchived,
-                Name = c.Name,
-            });
+            SellerData seller = await GetActiveSellerAsync();
+
+            var query = _db.Categories
+                .Include(c => c.Seller)
+                .Where(c => c.Seller == seller)
+                .Select(c => new CategoryListItemVm
+                {
+                    Id = c.Id,
+                    CreatedTime = c.CreatedTime,
+                    UpdatedTime = c.UpdatedTime,
+                    IsDeleted = c.IsDeleted,
+                    IsArchived = c.IsArchived,
+                    Name = c.Name,
+                });
 
             if (!string.IsNullOrEmpty(searchFilter))
             {
@@ -70,10 +82,15 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
+            SellerData seller = await GetActiveSellerAsync();
+
             int size = 4;
             int skip = (page - 1) * size;
 
-            var query = _db.Categories.Select(c => new CategoryListItemVm
+            var query = _db.Categories
+                .Include(c => c.Seller)
+                .Where(c => c.Seller == seller)
+                .Select(c => new CategoryListItemVm
             {
                 Id = c.Id,
                 CreatedTime = c.CreatedTime,
@@ -89,7 +106,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             var paginatedData = data.Skip(skip).Take(size).ToList();
 
-            PaginationVm<IEnumerable<CategoryListItemVm>> pag = new PaginationVm<IEnumerable<CategoryListItemVm>>(total, page, (int)Math.Ceiling((decimal)total / size), paginatedData, size);
+            PaginationVm<IEnumerable<CategoryListItemVm>> pag = new(total, page, (int)Math.Ceiling((decimal)total / size), paginatedData, size);
 
             if (paginatedData.Count == 0)
             {
@@ -113,6 +130,8 @@ namespace ShoppingMvc.Areas.Seller.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CategoryCreateVm vm)
         {
+            SellerData seller = await GetActiveSellerAsync();
+
             if (!ModelState.IsValid)
             {
                 return View(vm);
@@ -122,11 +141,14 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 ModelState.AddModelError("Name", vm.Name + " already exist");
                 return View(vm);
             }
-            Category product = new Category()
+
+            Category categroy = new Category()
             {
                 Name = vm.Name,
+                Seller = seller,
             };
-            _db.Categories.AddAsync(product);
+
+            _db.Categories.AddAsync(categroy);
             await _db.SaveChangesAsync();
             TempData["Response"] = true;
             return Redirect("/Seller/Category/Index");

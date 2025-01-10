@@ -21,7 +21,7 @@ namespace ShoppingMvc.Models
         public PaymentMethods PaymentMethod { get; set; }
 
         public Basket Basket { get; set; }
-        public IEnumerable<OrderTracking>? OrderTrackings { get; set; }
+        public IEnumerable<OrderTracking> OrderTrackings { get; set; }
 
         public Order()
         {

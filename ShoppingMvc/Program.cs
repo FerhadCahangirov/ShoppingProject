@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Enums;
+using ShoppingMvc.Filters;
 using ShoppingMvc.Models.Identity;
 
 namespace ShoppingMvc
@@ -52,7 +53,7 @@ namespace ShoppingMvc
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
 
                 options.LoginPath = new PathString("/Auth/Login");
                 options.LogoutPath = new PathString("/Auth/Logout");
@@ -61,6 +62,7 @@ namespace ShoppingMvc
             });
 
             builder.Services.AddTransient<IAuthorizationHandler, SellerAndApprovedHandler>();
+            builder.Services.AddScoped<ProductVisitorTrackingFilter>();
 
             builder.Services.AddAuthorization(options =>
             {

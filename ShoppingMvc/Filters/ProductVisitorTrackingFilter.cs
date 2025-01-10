@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Models;
@@ -43,45 +42,29 @@ namespace ShoppingMvc.Filters
             {
                 AppUser? user = await _db.Users.FirstOrDefaultAsync(u => u.UserName == username);
 
-                ProductVisitorData? lastVisitorData = await _db.ProductVisitorDatas
-                    .Include(pvd => pvd.User)
-                    .Include(pvd => pvd.Product)
-                    .OrderByDescending(pvd => pvd.CreatedTime)
-                    .FirstOrDefaultAsync(pvd => pvd.Product == product && pvd.User == user);
-
-                if (DateTime.UtcNow.AddHours(-1) < lastVisitorData?.CreatedTime)
+                ProductVisitorData productVisitorData = new ProductVisitorData()
                 {
-                    ProductVisitorData productVisitorData = new ProductVisitorData()
-                    {
-                        Product = product,
-                        User = user,
-                        HostAddress = hostAddress,
-                    };
+                    Product = product,
+                    User = user,
+                    HostAddress = hostAddress,
+                };
 
-                    await _db.ProductVisitorDatas.AddAsync(productVisitorData);
-                    await _db.SaveChangesAsync();
-                }
+                await _db.ProductVisitorDatas.AddAsync(productVisitorData);
+                await _db.SaveChangesAsync();
+
 
                 await next();
             }
             else
             {
-                ProductVisitorData? lastVisitorData = await _db.ProductVisitorDatas
-                    .Include(pvd => pvd.Product)
-                    .OrderByDescending(pvd => pvd.CreatedTime)
-                    .FirstOrDefaultAsync(pvd => pvd.Product == product && pvd.HostAddress == hostAddress);
-
-                if (DateTime.UtcNow.AddHours(-1) < lastVisitorData?.CreatedTime)
+                ProductVisitorData productVisitorData = new ProductVisitorData()
                 {
-                    ProductVisitorData productVisitorData = new ProductVisitorData()
-                    {
-                        Product = product,
-                        HostAddress = hostAddress,
-                    };
+                    Product = product,
+                    HostAddress = hostAddress,
+                };
 
-                    await _db.ProductVisitorDatas.AddAsync(productVisitorData);
-                    await _db.SaveChangesAsync();
-                }
+                await _db.ProductVisitorDatas.AddAsync(productVisitorData);
+                await _db.SaveChangesAsync();
 
                 await next();
             }

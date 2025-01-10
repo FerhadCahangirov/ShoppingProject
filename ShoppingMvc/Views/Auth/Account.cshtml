@@ -21,7 +21,7 @@
 
 
 <main class="main">
-    <div class="page-header breadcrumb-wrap">
+    <div class="page-header breadcrumb-wrap">   
         <div class="container">
             <div class="breadcrumb">
                 <a href="index.html" rel="nofollow">Home</a>
@@ -137,7 +137,6 @@
                                                 <tr>
                                                     <th>Order</th>
                                                     <th>Date</th>
-                                                    <th>Status</th>
                                                     <th>Total</th>
                                                     <th>Actions</th>
                                                 </tr>
@@ -148,13 +147,10 @@
                                                     <tr>
                                                         <td>#@order.Id</td>
                                                         <td>@order.OrderedDate</td>
-                                                        <td>@order.Status</td>
                                                         <td>$@order.TotalPrice for @order.ItemCount item</td>
                                                         <td><a href="#" class="btn-small d-block">View</a></td>
                                                     </tr>
                                                 }
-                                                
-
                                             </tbody>
                                         </table>
                                     </div>

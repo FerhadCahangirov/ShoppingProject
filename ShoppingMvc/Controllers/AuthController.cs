@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
+using ShoppingMvc.Enums;
 using ShoppingMvc.Helpers;
 using ShoppingMvc.Models;
 using ShoppingMvc.Models.Identity;
@@ -11,6 +13,7 @@ using ShoppingMvc.ViewModels.OrderVm;
 
 namespace ShoppingMvc.Controllers
 {
+
     public class AuthController : Controller
     {
         private readonly SignInManager<AppUser> _signInManager;
@@ -110,8 +113,18 @@ namespace ShoppingMvc.Controllers
         }
 
 
-        public async Task<IActionResult> SellerRegistration()
+        public IActionResult SellerRegistration()
         {
+            var shopCategories = Enum.GetValues(typeof(SellerCategories))
+                .Cast<SellerCategories>()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.ToString(),
+                    Text = c.ToString()
+                });
+
+            ViewBag.ShopCategories = new SelectList(shopCategories, "Value", "Text");
+
             return View();
         }
 
@@ -128,6 +141,15 @@ namespace ShoppingMvc.Controllers
 
             if (!ModelState.IsValid)
             {
+                var shopCategories = Enum.GetValues(typeof(SellerCategories))
+                .Cast<SellerCategories>()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.ToString(),
+                    Text = c.ToString()
+                });
+
+                ViewBag.ShopCategories = new SelectList(shopCategories, "Value", "Text");
                 return View(vm);
             }
             if (vm.IdentityImage != null)
@@ -154,11 +176,11 @@ namespace ShoppingMvc.Controllers
                 IsApproved = false,
                 ShopCity = vm.ShopCity,
                 ShopCountry = vm.ShopCountry,
-                ShopState = vm.ShopState,
                 ShopStreet = vm.ShopStreet,
                 ShopPostalCode = vm.ShopPostalCode,
                 ShopAdditionalAddressInfo = vm.ShopAdditionalAddressInfo,
-                Seller = user
+                Seller = user,
+                ShopCategory = vm.ShopCategory,
             };
 
             using (Stream fs = new FileStream(Path.Combine(_webHostEnvironment.WebRootPath, "Assets", "assets", "sellerIdentities", filename), FileMode.Create))
@@ -210,11 +232,12 @@ namespace ShoppingMvc.Controllers
 
             await _db.SaveChangesAsync();
 
-            return Redirect("/");
+            TempData["SellerRequestSent"] = true;
+            return Redirect("/Home/Index");
         }
 
 
-        [Authorize]
+        [Authorize(Policy = "AuthRequiredPolicy")]
         public async Task<IActionResult> Account()
         {
             var username = HttpContext.User.Identity?.Name;
@@ -234,11 +257,11 @@ namespace ShoppingMvc.Controllers
 
             IEnumerable<CustomerOrderListItemVm> ordersVm = orders.Select(o => o.FromOrder_ToCustomerOrderListItemVm());
             accountVm.Orders = ordersVm;
-                
+
             return View(accountVm);
         }
 
-        [Authorize]
+        [Authorize(Policy = "AuthRequiredPolicy")]
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(AccountVm vm)
         {

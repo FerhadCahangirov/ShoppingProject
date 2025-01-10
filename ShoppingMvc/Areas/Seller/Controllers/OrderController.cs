@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ShoppingMvc.Contexts;
 using ShoppingMvc.Enums;
+using ShoppingMvc.Extensions;
 using ShoppingMvc.Models;
 using ShoppingMvc.Models.Identity;
 using ShoppingMvc.ViewModels.CommonVm;
 using ShoppingMvc.ViewModels.OrderVm;
-using ShoppingMvc.ViewModels.ProductVm;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace ShoppingMvc.Areas.Seller.Controllers
 {
@@ -42,7 +44,14 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .ThenInclude(p => p.SellerData)
                 .ThenInclude(sd => sd.Seller)
                 .Include(o => o.Basket)
+                .ThenInclude(b => b.BasketItems)
+                .ThenInclude(bi => bi.Product)
+                .ThenInclude(b => b.ProductImages)
+                .Include(o => o.Basket)
                 .ThenInclude(b => b.User)
+                .Include(o => o.OrderTrackings)
+                .ThenInclude(ot => ot.SellerData)
+                .ThenInclude(sd => sd.Seller)
                 .Where(o => o.Basket.BasketItems.Any(bi => bi.Product.SellerData.Seller.UserName == seller.UserName))
                 .Select(o => o.FromOrder_ToSellerOrderListItemVm(seller));
 
@@ -63,7 +72,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .Select(p => new SelectListItem
                 {
                     Value = p.ToString(),
-                    Text = p.ToString()
+                    Text = p.GetDescription()
                 });
 
             ViewBag.ShippingStatus = new SelectList(shippingStatus, "Value", "Text");
@@ -82,6 +91,9 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .ThenInclude(b => b.ProductImages)
                 .Include(o => o.Basket)
                 .ThenInclude(b => b.User)
+                .Include(o => o.OrderTrackings)
+                .ThenInclude(ot => ot.SellerData)
+                .ThenInclude(sd => sd.Seller)
                 .SingleOrDefault(o => o.Id == id);
 
             if (order == null) return NotFound();
@@ -98,7 +110,7 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .Select(p => new SelectListItem
                 {
                     Value = p.ToString(),
-                    Text = p.ToString()
+                    Text = p.GetDescription()
                 });
 
             ViewBag.ShippingStatus = new SelectList(shippingStatus, "Value", "Text");
@@ -117,6 +129,9 @@ namespace ShoppingMvc.Areas.Seller.Controllers
                 .ThenInclude(b => b.ProductImages)
                 .Include(o => o.Basket)
                 .ThenInclude(b => b.User)
+                .Include(o => o.OrderTrackings)
+                .ThenInclude(ot => ot.SellerData)
+                .ThenInclude(sd => sd.Seller)
                 .SingleOrDefault(o => o.Id == id);
 
             if (order == null) return NotFound();
@@ -125,5 +140,25 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
             return View(sellerOrderListItemVm);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> ChangeOrderStatus(int id, string status)
+        {
+            AppUser user = await GetAuthenticatedUserAsync();
+
+            SellerData seller = await _db.SellerDatas.SingleAsync(x => x.Seller == user);
+            Order order = await _db.Orders.SingleAsync(x => x.Id == id);
+
+            var orderTracking = await _db.OrderTrackings.SingleAsync(x => x.SellerData == seller && x.Order == order);
+
+            orderTracking.ShippingStatus = Enum.GetValues<ShippingStatus>().Single(x => x.ToString().ToLower() == status.ToLower());
+
+            _db.OrderTrackings.Update(orderTracking);
+
+            await _db.SaveChangesAsync();
+
+            return new JsonResult(new { success = true });
+        }
+
     }
 }

@@ -124,6 +124,30 @@ namespace ShoppingMvc.Controllers
 
             await _db.SaveChangesAsync();
 
+            basket = await _db.Baskets
+                .Include(b => b.BasketItems)
+                .ThenInclude(bi => bi.Product)
+                .ThenInclude(p => p.SellerData)
+                .FirstAsync(b => b.Id == basket.Id);
+
+            var sellers = basket.BasketItems.Select(bi => bi.Product.SellerData).Distinct();
+
+            order = await _db.Orders.Include(o => o.Basket).FirstAsync(o => o.Basket == basket); 
+
+            List<OrderTracking> orderTrackings = new List<OrderTracking>();
+
+            foreach(SellerData seller in sellers)
+                orderTrackings.Add(new OrderTracking
+                {
+                    ShippingStatus = ShippingStatus.Processing,
+                    Order = order,
+                    SellerData = seller
+                });
+            
+
+            await _db.OrderTrackings.AddRangeAsync(orderTrackings);
+            await _db.SaveChangesAsync();
+
             TempData["RedirectedToOrder"] = true;
             return RedirectToAction("Account", "Auth");
         }

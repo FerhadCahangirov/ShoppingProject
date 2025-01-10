@@ -65,6 +65,7 @@ namespace ShoppingMvc.Areas.Admin.Controllers
             var filteredData = await query.ToListAsync();
             int total = filteredData.Count();
             var paginatedData = filteredData.Skip(skip).Take(take).ToList();
+
             PaginationVm<IEnumerable<SellerListItemVm>> pagination = new(total, page, (int)Math.Ceiling((decimal)total / take), filteredData);
 
             if (paginatedData.Count == 0)
@@ -151,7 +152,6 @@ namespace ShoppingMvc.Areas.Admin.Controllers
 
             int total = products.Count();
 
-
             PaginationVm<IEnumerable<ProductListItemVm>> pagination = new(total, page, (int)Math.Ceiling((decimal)total / size), products);
 
             SellerListItemVm sellerListItemVm = new SellerListItemVm()
@@ -180,10 +180,8 @@ namespace ShoppingMvc.Areas.Admin.Controllers
 
             await _db.SaveChangesAsync();
 
-            TempData["SellerApproved"] = true;
-            return RedirectToAction("SellerDetails", id);
+            return new JsonResult(new { success = true });
         }
-
 
         public async Task<IActionResult> DeleteFromData(int? id)
         {

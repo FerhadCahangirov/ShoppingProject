@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ShoppingMvc.Models;
@@ -56,6 +57,7 @@ namespace ShoppingMvc.Contexts
                 .HasOne<Order>(ot => ot.Order)
                 .WithMany(o => o.OrderTrackings)
                 .OnDelete(DeleteBehavior.NoAction);
+
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

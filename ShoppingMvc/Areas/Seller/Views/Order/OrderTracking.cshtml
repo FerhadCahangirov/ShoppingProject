@@ -1,4 +1,26 @@
 ﻿@model SellerOrderListItemVm
+
+<script>
+    function changeOrderStatus(id) {
+        var selectElement = document.getElementById("statusformordertracking");
+        var status = selectElement.options[selectElement.selectedIndex].value;
+        $.ajax({
+            url: '/Seller/Order/ChangeOrderStatus',
+            type: 'PUT',
+            data: {
+                id: id,
+                status: status
+            },
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                console.log('Error applying filters');
+            }
+        })
+    }
+</script>
+
 <section class="content-main">
     <div class="content-header">
         <div>
@@ -17,10 +39,9 @@
                     @* <small class="text-muted">Your order has been delivered</small> *@
                 </div>
                 <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                    <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200 mr-15" asp-for="Status" asp-items="@ViewBag.ShippingStatus">
+                    <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200 mr-15" id="statusformordertracking" asp-for="Tracking" asp-items="@ViewBag.ShippingStatus" onchange="changeOrderStatus(@Model.Id)">
                         <option disabled>Change status</option>
                     </select>
-                    <a class="btn btn-primary" href="#">Screenshot</a>
                     <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print mr-5"></i>Print</a>
                 </div>
             </div>
@@ -30,7 +51,7 @@
                 <div class="steps d-flex flex-wrap flex-sm-nowrap justify-content-between">
 
 
-                    <div class="step @((Model.Status == "Confirmed" || Model.Status == "Processing" || Model.Status == "QualityCheck" || Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                    <div class="step @((Model.Tracking == "Confirmed" || Model.Tracking == "Processing" || Model.Tracking == "QualityCheck" || Model.Tracking == "ProductDispatched" || Model.Tracking == "ProductDelivered") ? "completed" : "")">
                         <div class="step-icon-wrap">
                             <div class="step-icon"><i class="material-icons md-shopping_cart"></i></div>
                         </div>
@@ -38,25 +59,25 @@
                     </div>
 
 
-                    <div class="step @((Model.Status == "Processing" || Model.Status == "QualityCheck" || Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                    <div class="step @((Model.Tracking == "Processing" || Model.Tracking == "QualityCheck" || Model.Tracking == "ProductDispatched" || Model.Tracking == "ProductDelivered") ? "completed" : "")">
                         <div class="step-icon-wrap">
                             <div class="step-icon"><i class="material-icons md-settings"></i></div>
                         </div>
                         <h4 class="step-title">Processing Order</h4>
                     </div>
-                    <div class="step @((Model.Status == "QualityCheck" || Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                    <div class="step @((Model.Tracking == "QualityCheck" || Model.Tracking == "ProductDispatched" || Model.Tracking == "ProductDelivered") ? "completed" : "")">
                         <div class="step-icon-wrap">
                             <div class="step-icon"><i class="material-icons md-shopping_bag"></i></div>
                         </div>
                         <h4 class="step-title">Quality Check</h4>
                     </div>
-                    <div class="step @((Model.Status == "ProductDispatched" || Model.Status == "ProductDelivered") ? "completed" : "")">
+                    <div class="step @((Model.Tracking == "ProductDispatched" || Model.Tracking == "ProductDelivered") ? "completed" : "")">
                         <div class="step-icon-wrap">
                             <div class="step-icon"><i class="material-icons md-local_shipping"></i></div>
                         </div>
                         <h4 class="step-title">Product Dispatched</h4>
                     </div>
-                    <div class="step @((Model.Status == "ProductDelivered") ? "completed" : "")">
+                    <div class="step @((Model.Tracking == "ProductDelivered") ? "completed" : "")">
                         <div class="step-icon-wrap">
                             <div class="step-icon"><i class="material-icons md-check_circle"></i></div>
                         </div>

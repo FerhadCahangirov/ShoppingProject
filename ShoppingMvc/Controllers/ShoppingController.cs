@@ -22,8 +22,8 @@ namespace ShoppingMvc.Controllers
         public async Task<IActionResult> Index()
         {
             int take = 4;
-            var items = _db.Products.Where(p => !p.IsDeleted).Take(take).Select(p => p.FromProduct_ToProductListItemVm());
-            int count = await _db.Products.CountAsync(x => !x.IsDeleted);
+            var items = _db.Products.Where(p => !p.IsDeleted && !p.IsArchived).Take(take).Select(p => p.FromProduct_ToProductListItemVm());
+            int count = await _db.Products.CountAsync(x => !x.IsDeleted && !x.IsArchived);
             PaginationVm<IEnumerable<ProductListItemVm>> pag = new(count, 1, (int)Math.Ceiling((decimal)count / take), items);
             HomeVm vm = new HomeVm
             {
@@ -34,8 +34,8 @@ namespace ShoppingMvc.Controllers
 
         public async Task<IActionResult> ProductPagination(int page = 1, int count = 8)
         {
-            var items = _db.Products.Where(p => !p.IsDeleted).Skip((page - 1) * count).Take(count).Select(p => p.FromProduct_ToProductListItemVm());
-            int totalCount = await _db.Products.CountAsync(x => !x.IsDeleted);
+            var items = _db.Products.Where(p => !p.IsDeleted && !p.IsArchived).Skip((page - 1) * count).Take(count).Select(p => p.FromProduct_ToProductListItemVm());
+            int totalCount = await _db.Products.CountAsync(x => !x.IsDeleted && !x.IsArchived);
             PaginationVm<IEnumerable<ProductListItemVm>> pag = new(totalCount, page, (int)Math.Ceiling((decimal)totalCount / count), items);
 
             return PartialView("_ShopProductPartial", pag);

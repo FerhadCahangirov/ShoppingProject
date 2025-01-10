@@ -24,18 +24,28 @@ namespace ShoppingMvc.Areas.Seller.Controllers
             _env = env;
         }
 
+        private async Task<SellerData> GetActiveSellerAsync() =>
+            await _db.SellerDatas
+                .Include(x => x.Seller)
+                .FirstAsync(x => x.Seller.UserName == HttpContext.User.Identity.Name);
+
         public async Task<IActionResult> TagsPartial(string? searchFilter, DateTime? dateFilter, string? statusFilter, int page = 1, int size = 4)
         {
-            var query = _db.Tags.Select(c => new TagListItemVm
-            {
-                Id = c.Id,
-                CreatedTime = c.CreatedTime,
-                UpdatedTime = c.UpdatedTime,
-                IsDeleted = c.IsDeleted,
-                IsArchived = c.IsArchived,
-                Title = c.Title,
+            SellerData seller = await GetActiveSellerAsync();
 
-            });
+            var query = _db.Tags
+                .Include(t => t.Seller)
+                .Where(t => t.Seller == seller)
+                .Select(t => new TagListItemVm
+                {
+                    Id = t.Id,
+                    CreatedTime = t.CreatedTime,
+                    UpdatedTime = t.UpdatedTime,
+                    IsDeleted = t.IsDeleted,
+                    IsArchived = t.IsArchived,
+                    Title = t.Title,
+
+                });
 
             if (!string.IsNullOrEmpty(searchFilter))
             {
@@ -68,19 +78,24 @@ namespace ShoppingMvc.Areas.Seller.Controllers
 
         public async Task<IActionResult> Index()
         {
+            SellerData seller = await GetActiveSellerAsync();
+
             int page = 1;
             int take = 4;
             int skip = (page - 1) * take;
 
-            var query = _db.Tags.Select(c => new TagListItemVm
-            {
-                Id = c.Id,
-                CreatedTime = c.CreatedTime,
-                UpdatedTime = c.UpdatedTime,
-                IsDeleted = c.IsDeleted,
-                IsArchived = c.IsArchived,
-                Title = c.Title,
-            });
+            var query = _db.Tags
+                .Include(t => t.Seller)
+                .Where(t => t.Seller == seller)
+                .Select(t => new TagListItemVm
+                {
+                    Id = t.Id,
+                    CreatedTime = t.CreatedTime,
+                    UpdatedTime = t.UpdatedTime,
+                    IsDeleted = t.IsDeleted,
+                    IsArchived = t.IsArchived,
+                    Title = t.Title,
+                });
 
             var data = await query.ToListAsync();
 
@@ -113,12 +128,15 @@ namespace ShoppingMvc.Areas.Seller.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TagCreateVm vm)
         {
+            SellerData seller = await GetActiveSellerAsync();
 
             Tag tag = new Tag()
             {
                 Title = vm.Title,
+                Seller = seller
             };
-            _db.Tags.AddAsync(tag);
+
+            await _db.Tags.AddAsync(tag);
             await _db.SaveChangesAsync();
             TempData["Create"] = true;
             return Redirect("/Seller/Tag/Index");
